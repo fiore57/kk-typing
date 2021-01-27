@@ -1,0 +1,13 @@
+extends layout
+
+block scripts
+  script(defer, src="/javascripts/bundle.js")
+
+block content
+  div
+    div#timer.text-right
+    p#typingText.lead
+    input(type="text", autofocus, spellcheck="false")#typingInput.form-control.input-lg.my-3
+    p#output
+    button(style="display:none")#sendRecordToRanking.btn.btn-primary ネットランキングに記録を送信
+

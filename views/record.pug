@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h3.my-4 TOP15 Records
+  table.table.text-center
+    tr
+      th(scope="col") Rank
+      th(scope="col") Time
+      th(scope="col") Date
+    each record, index in records
+      tr
+        td #{index + 1}
+        td #{(record.time / 1000).toFixed(3)}
+        td #{record.formattedUpdatedAt}

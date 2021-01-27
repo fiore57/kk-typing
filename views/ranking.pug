@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  h3.my-4 Ranking
+  table.table.text-center
+    tr
+      th(scope="col") Rank
+      th(scope="col") Time
+      th(scope="col") Name
+      th(scope="col") Date
+    each ranking, index in rankings
+      tr
+        td #{index + 1}
+        td #{(ranking.time / 1000).toFixed(3)}
+        td #{ranking.user.username}
+        td #{ranking.formattedUpdatedAt}
+
