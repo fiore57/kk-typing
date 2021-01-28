@@ -122,21 +122,21 @@ document.body.addEventListener('keydown', function (event) {
     resetTypingTest();
     return;
   }
-});
-var typingTextList;
-jquery__WEBPACK_IMPORTED_MODULE_0___default.a.get('/typing-test/api/get-text').then(function (object) {
-  typingTextList = object.textList;
-}, function (error) {
-  console.error('文章の取得に失敗しました');
-});
+}); // TODO: コメントアウト
+
 /*
-const typingTextList = [
-  'これはテストです。',
-  'かな漢字変換の練習ツールです。',
-  'abc123 こんにちは',
-];
+let typingTextList;
+$.get('/typing-test/api/get-text').then(
+  object => {
+    typingTextList = object.textList;
+  },
+  error => {
+    console.error('文章の取得に失敗しました');
+  }
+);
 */
 
+var typingTextList = ["これはテストです。", "かな漢字変換込みのタイピングを練習できます。"];
 var typingTextArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#typingText');
 var typingInputArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#typingInput');
 var output = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#output');
@@ -185,14 +185,14 @@ typingInputArea.on('keypress', function (event) {
         var resultObject = {
           "timeMs": resultTimeMs
         };
-        jquery__WEBPACK_IMPORTED_MODULE_0___default.a.post('/typing-test/api/record', resultObject, 'json').then(function (recordsObject) {
-          var records = recordsObject.records;
-          var canUpdateRanking = recordsObject.canUpdateRanking;
-          var rank = records.findIndex(function (e) {
-            return e.time === resultTimeMs;
-          }) + 1;
+        jquery__WEBPACK_IMPORTED_MODULE_0___default.a.post('/typing-test/api/record', resultObject, 'json').then(function (object) {
+          _lib_assert__WEBPACK_IMPORTED_MODULE_3__["default"].defined(object.status);
+          _lib_assert__WEBPACK_IMPORTED_MODULE_3__["default"].defined(object.recordRank);
+          _lib_assert__WEBPACK_IMPORTED_MODULE_3__["default"].defined(object.canUpdateRanking);
+          var recordRank = object.recordRank;
+          var canUpdateRanking = object.canUpdateRanking;
           var displayTime = (resultTimeMs / 1000).toFixed(3);
-          var displayMessage = rank === 1 ? "\u65B0\u8A18\u9332\u9054\u6210\uFF01" : "\u7B2C".concat(rank, "\u4F4D");
+          var displayMessage = recordRank === 1 ? "\u65B0\u8A18\u9332\u9054\u6210\uFF01" : "\u7B2C".concat(recordRank, "\u4F4D");
           output.text("finished!\nTime: ".concat(displayTime, "\n").concat(displayMessage));
 
           if (canUpdateRanking) {

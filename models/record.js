@@ -5,6 +5,12 @@ const Sequelize = loader.Sequelize;
 const Record = loader.database.define(
   'records',
   {
+    recordId: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+      allowNull: false
+    },
     time: {
       type: Sequelize.INTEGER,
       allowNull: false

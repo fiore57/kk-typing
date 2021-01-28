@@ -29,6 +29,8 @@ document.body.addEventListener('keydown',
   });
 
 
+// TODO: コメントアウト
+/*
 let typingTextList;
 $.get('/typing-test/api/get-text').then(
   object => {
@@ -38,6 +40,11 @@ $.get('/typing-test/api/get-text').then(
     console.error('文章の取得に失敗しました');
   }
 );
+*/
+const typingTextList = [
+  "これはテストです。",
+  "かな漢字変換込みのタイピングを練習できます。"
+];
 const typingTextArea = $('#typingText');
 const typingInputArea = $('#typingInput');
 const output = $('#output');
@@ -88,16 +95,17 @@ typingInputArea.on('keypress', event => {
           "timeMs": resultTimeMs
         };
         $.post('/typing-test/api/record', resultObject, 'json').then(
-          recordsObject => {
-            const records = recordsObject.records;
-            const canUpdateRanking = recordsObject.canUpdateRanking;
+          object => {
+            assert.defined(object.status, object.recordRank, object.canUpdateRanking);
 
-            const rank = records.findIndex((e) => e.time === resultTimeMs) + 1;
+            const recordRank = object.recordRank;
+            const canUpdateRanking = object.canUpdateRanking;
+
             const displayTime = (resultTimeMs / 1000).toFixed(3);
             const displayMessage =
-              rank === 1 ?
+              recordRank === 1 ?
                 `新記録達成！` :
-                `第${rank}位`;
+                `第${recordRank}位`;
             output.text(
               `finished!\nTime: ${displayTime}\n${displayMessage}`
             );

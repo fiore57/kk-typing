@@ -5,7 +5,9 @@ block scripts
 
 block content
   div
-    div#timer.text-right
+    div.d-flex
+      div#message.p-2.flex-grow-1 Press Enter or Space to start
+      div#timer.p-2.border.w-25.text-right 0.0
     p#typingText.lead
     input(type="text", autofocus, spellcheck="false")#typingInput.form-control.input-lg.my-3
     p#output
