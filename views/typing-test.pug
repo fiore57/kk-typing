@@ -5,11 +5,28 @@ block scripts
 
 block content
   div
-    div.d-flex
-      div#message.p-2.mr-auto.h4 Press Enter or Space to start
+    div.d-flex.my-3
+      div(role="alert")#message.p-2.mr-auto.h5.alert.alert-light Enter または Space を押してスタート
       div#timer.p-2.border.w-25.text-right.h4 0.0
     p#typingText.lead
-    input(type="text", autofocus, spellcheck="false")#typingInput.form-control.input-lg.my-3
+    input(type="text" autofocus spellcheck="false")#typingInput.form-control.input-lg.my-3
+    div(role="dialog" aria-hidden="true")#modal.modal.fade
+      div(role="document").modal-dialog
+        div.modal-content
+          div.modal-header
+            h5.modal-title Result
+            button(type="button", data-dismiss="modal", area-label="Close").close
+              span(aria-hidden="true") &times;
+          div.modal-body
+            p#resultModalBody
+          div.modal-footer
+            button(type="button" data-dismiss="modal").btn.btn-secondary 閉じる
+    p#result.h4.my-5
+    div.btn-toolbar(role="toolbar")
+      div(style="display:none")#resultButtons.mx-auto
+        button(type="button" style="display:none")#sendRecordToRanking.btn.btn-primary.mx-2.my-1 ネットランキングに記録を送信
+        button(type="button")#retryButton.btn.btn-secondary.mx-2.my-1 リトライ
+        a(href="/record" role="button").btn.btn-info.mx-2.my-1 自分の記録を見る
+        a(href="/ranking" role="button").btn.btn-info.mx-2.my-1 ネットランキングを見る
     p#output
-    button(style="display:none")#sendRecordToRanking.btn.btn-primary ネットランキングに記録を送信
 

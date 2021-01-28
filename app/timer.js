@@ -2,62 +2,93 @@
 import assert from './lib/assert';
 
 export default class Timer {
+  /**
+   * タイマーが動いているかどうか
+   * @type {boolean}
+   */
   #isRunningTimer = false;
+  /**
+   * 計測開始時間
+   * @type {number}
+   */
   #startTimeMs;
+  /**
+   * 経過時間
+   * @type {number}
+   */
   #elapsedTimeMs = 0;
   /**
+   * タイマーの描画先
    * @type {jQuery}
    */
   #timerArea;
   /**
-   * 時間の計測を開始する
-   * @param {jQuery} timerArea
+   * @param {jQuery} timerArea タイマーの描画先
    */
   constructor(timerArea) {
+    assert.defined(timerArea);
+    this.#timerArea = timerArea;
+    this.reset();
+  }
+  /**
+   * 計測を開始する
+   */
+  start() {
     this.#isRunningTimer = true;
     this.#startTimeMs = Date.now();
     this.#elapsedTimeMs = 0;
-    this.#timerArea = timerArea;
-    window.requestAnimationFrame(this.calcTime);
+    window.requestAnimationFrame(this.updateTime);
   }
   /**
-   * タイマーを止める
+   * タイマーを止める（タイムは保持する）
    */
   stop() {
     this.#isRunningTimer = false;
     this.#elapsedTimeMs = Date.now() - this.#startTimeMs;
+    this.drawTime();
+  }
+  /**
+   * タイマーをリセットする（タイムは破棄する）
+   */
+  reset() {
+    this.#isRunningTimer = false;
+    this.#elapsedTimeMs = 0;
+    this.drawTime();
   }
   /**
    * requestAnimationFrame のループで呼ばれる関数
+   *
+   * 現在の経過時間を計算し、描画する
    */
-  calcTime = () => {
+  updateTime = () => {
     if (this.#isRunningTimer) {
       this.#elapsedTimeMs = Date.now() - this.#startTimeMs;
       this.drawTime();
-      window.requestAnimationFrame(this.calcTime);
+      window.requestAnimationFrame(this.updateTime);
     }
   }
   /**
    * 現在の経過時間を描画する
+   *
    * 値は小数第1位まで表示する
    */
   drawTime() {
-    assert.defined(this.#timerArea);
     this.#timerArea.text(this.getDisplayTime());
   }
   /**
-   * 現在の経過時間を返す
-   * @return {number} 経過時間(ms)
+   * 現在の経過時間 (ms)
+   * @type {number}
    */
-  getElapsedTimeMs() {
+  get elapsedTimeMs() {
     return this.#elapsedTimeMs;
   }
   /**
    * 表示する時間を小数（文字列）で返す
+   *
    * 値は小数第1位まで表示する
    * @return {string} 経過時間(s)
    */
   getDisplayTime() {
-    return (this.getElapsedTimeMs() / 1000).toFixed(1);
+    return (this.elapsedTimeMs / 1000).toFixed(1);
   }
 }

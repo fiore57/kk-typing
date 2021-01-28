@@ -8,9 +8,9 @@ block content
       th(scope="col") Time
       th(scope="col") Name
       th(scope="col") Date
-    each ranking, index in rankings
+    each ranking in rankings
       tr
-        td #{index + 1}
+        td #{ranking.rank}
         td #{(ranking.time / 1000).toFixed(3)}
         td #{ranking.user.username}
         td #{ranking.formattedUpdatedAt}

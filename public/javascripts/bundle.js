@@ -13,31 +13,30 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _lib_assert__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(5);
 
 
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _classPrivateFieldGet(receiver, privateMap) { var descriptor = privateMap.get(receiver); if (!descriptor) { throw new TypeError("attempted to get private field on non-instance"); } if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
+
+function _classPrivateFieldSet(receiver, privateMap, value) { var descriptor = privateMap.get(receiver); if (!descriptor) { throw new TypeError("attempted to set private field on non-instance"); } if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } return value; }
+
 
 var global = Function('return this;')();
 global.jQuery = (jquery__WEBPACK_IMPORTED_MODULE_0___default());
 
 
 
-var startKeyList = ['Enter', ' '];
-var resetKeyList = ['Escape'];
-var isInGame = false;
-var curTypingTextIndex = 0;
-var timer = undefined;
-var timerArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#timer');
-document.body.addEventListener('keydown', function (event) {
-  console.log(event.key);
-
-  if (!isInGame && startKeyList.includes(event.key)) {
-    startTypingTest();
-    return;
-  }
-
-  if (isInGame && resetKeyList.includes(event.key)) {
-    resetTypingTest();
-    return;
-  }
-}); // TODO: コメントアウト
+var messageArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#message');
+var typingTextArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#typingText');
+var typingInputArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#typingInput');
+var resultArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#result');
+var outputArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#output');
+var resultButtonsArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#resultButtons');
+var sendRecordToRankingButtonArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#sendRecordToRanking');
+var retryButtonArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#retryButton'); // TODO: コメントアウト
 
 /*
 let typingTextList;
@@ -52,87 +51,224 @@ $.get('/typing-test/api/get-text').then(
 */
 
 var typingTextList = ["これはテストです。", "かな漢字変換込みのタイピングを練習できます。"];
-var typingTextArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#typingText');
-var typingInputArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#typingInput');
-var output = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#output');
-var sendRecordToRankingButtonArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#sendRecordToRanking');
 
-function startTypingTest() {
-  isInGame = true;
-  curTypingTextIndex = 0;
-  updateTypingText();
-  typingInputArea.val('');
-  output.text('');
-  sendRecordToRankingButtonArea.hide();
-  timer = new _timer__WEBPACK_IMPORTED_MODULE_2__.default(timerArea);
-}
+var _isInTest = new WeakMap();
 
-function resetTypingTest() {
-  isInGame = false;
-  curTypingTextIndex = 0;
-  typingTextArea.text('');
-  typingInputArea.val('');
-  output.text('');
-  sendRecordToRankingButtonArea.hide();
-  timer.stop();
-  timer = undefined;
-}
+var _timer = new WeakMap();
 
-function updateTypingText() {
-  typingTextArea.text(typingTextList[curTypingTextIndex]);
-}
+var _curTypingTextIndex = new WeakMap();
 
+var TypingTest = /*#__PURE__*/function () {
+  /**
+   * タイピングテスト中かどうか
+   * @type {boolean}
+   */
+
+  /**
+   * タイマー
+   * @type {Timer}
+   */
+
+  /**
+   * 現在入力している typingTextList の index
+   * @type {number}
+   */
+  function TypingTest() {
+    _classCallCheck(this, TypingTest);
+
+    _isInTest.set(this, {
+      writable: true,
+      value: false
+    });
+
+    _timer.set(this, {
+      writable: true,
+      value: void 0
+    });
+
+    _curTypingTextIndex.set(this, {
+      writable: true,
+      value: 0
+    });
+
+    var timerArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#timer');
+
+    _classPrivateFieldSet(this, _timer, new _timer__WEBPACK_IMPORTED_MODULE_2__.default(timerArea));
+  }
+
+  _createClass(TypingTest, [{
+    key: "start",
+    value: function start() {
+      _classPrivateFieldSet(this, _isInTest, true);
+
+      _classPrivateFieldSet(this, _curTypingTextIndex, 0);
+
+      _classPrivateFieldGet(this, _timer).start();
+
+      messageArea.text('Esc でリセット');
+      typingTextArea.text(typingTextList[_classPrivateFieldGet(this, _curTypingTextIndex)]);
+      typingInputArea.val('');
+      typingInputArea.trigger('focus');
+      resultArea.text('');
+      outputArea.text('');
+      sendRecordToRankingButtonArea.hide();
+      sendRecordToRankingButtonArea.prop('disabled', false);
+      sendRecordToRankingButtonArea.text('ネットランキングに記録を送信');
+      resultButtonsArea.hide();
+    }
+  }, {
+    key: "reset",
+    value: function reset() {
+      _classPrivateFieldSet(this, _isInTest, false);
+
+      _classPrivateFieldSet(this, _curTypingTextIndex, 0);
+
+      _classPrivateFieldGet(this, _timer).reset();
+
+      messageArea.text('Enter または Space を押してスタート');
+      typingTextArea.text('');
+      typingInputArea.val('');
+      resultArea.text('');
+      outputArea.text('');
+      sendRecordToRankingButtonArea.hide();
+      sendRecordToRankingButtonArea.prop('disabled', false);
+      sendRecordToRankingButtonArea.text('ネットランキングに記録を送信');
+      resultButtonsArea.hide();
+    }
+  }, {
+    key: "input",
+    value: function input(inputText) {
+      if (inputText === typingTextList[_classPrivateFieldGet(this, _curTypingTextIndex)]) {
+        typingInputArea.val('');
+
+        _classPrivateFieldSet(this, _curTypingTextIndex, +_classPrivateFieldGet(this, _curTypingTextIndex) + 1);
+
+        if (_classPrivateFieldGet(this, _curTypingTextIndex) === typingTextList.length) {
+          this.finish();
+          return;
+        }
+
+        typingTextArea.text(typingTextList[_classPrivateFieldGet(this, _curTypingTextIndex)]);
+      }
+    }
+  }, {
+    key: "finish",
+    value: function finish() {
+      _classPrivateFieldSet(this, _isInTest, false);
+
+      _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(_classPrivateFieldGet(this, _timer));
+
+      _classPrivateFieldGet(this, _timer).stop();
+
+      var resultTimeMs = _classPrivateFieldGet(this, _timer).elapsedTimeMs;
+
+      var resultObject = {
+        "timeMs": resultTimeMs
+      };
+      jquery__WEBPACK_IMPORTED_MODULE_0___default().post('/typing-test/api/record', resultObject, 'json').then(function (object) {
+        _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(object.status, object.recordRank, object.canUpdateRanking);
+        var recordRank = object.recordRank;
+        var canUpdateRanking = object.canUpdateRanking;
+        var displayTime = (resultTimeMs / 1000).toFixed(3);
+        var displayMessage = recordRank === 1 ? "\u65B0\u8A18\u9332\u9054\u6210\uFF01" : "\u7B2C".concat(recordRank, "\u4F4D");
+        resultArea.text("finished!\nTime: ".concat(displayTime, "\n").concat(displayMessage));
+        resultButtonsArea.show();
+
+        if (canUpdateRanking) {
+          sendRecordToRankingButtonArea.show();
+        }
+      }, function (error) {
+        outputArea.text('記録の保存に失敗しました');
+      });
+    }
+    /**
+     * テスト中か否か
+     */
+
+  }, {
+    key: "isInTest",
+    get: function get() {
+      return _classPrivateFieldGet(this, _isInTest);
+    }
+    /**
+     * タイム (ms)
+     *
+     * タイムが取得できない場合、-1
+     * @type {number}
+     */
+
+  }, {
+    key: "resultTimeMs",
+    get: function get() {
+      if (_classPrivateFieldGet(this, _isInTest) || _classPrivateFieldGet(this, _timer).elapsedTimeMs === 0) return -1;
+      return _classPrivateFieldGet(this, _timer).elapsedTimeMs;
+    }
+  }]);
+
+  return TypingTest;
+}();
+
+var typingTest = new TypingTest();
+var startKeyList = ['Enter', ' '];
+var resetKeyList = ['Escape'];
+/*
+document.body.addEventListener('keydown',
+  event => {
+    console.log(event.key);
+    if (!typingTest.isInTest && startKeyList.includes(event.key)) {
+      typingTest.start();
+      return;
+    }
+    if (typingTest.isInTest && resetKeyList.includes(event.key)) {
+      typingTest.reset();
+      return;
+    }
+  });
+*/
+
+jquery__WEBPACK_IMPORTED_MODULE_0___default()(document.body).on('keydown', function (event) {
+  if (!typingTest.isInTest && startKeyList.includes(event.key)) {
+    typingTest.start();
+  } else if (typingTest.isInTest && resetKeyList.includes(event.key)) {
+    typingTest.reset();
+  }
+});
 typingInputArea.on('keypress', function (event) {
   console.log(event);
 
-  if (isInGame && event.key === 'Enter') {
+  if (typingTest.isInTest && event.key === 'Enter') {
     var inputText = typingInputArea.val();
-
-    if (inputText === typingTextList[curTypingTextIndex]) {
-      typingInputArea.val('');
-      ++curTypingTextIndex;
-
-      if (curTypingTextIndex === typingTextList.length) {
-        isInGame = false;
-        _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(timer);
-        timer.stop();
-        var resultTimeMs = timer.getElapsedTimeMs();
-        var resultObject = {
-          "timeMs": resultTimeMs
-        };
-        jquery__WEBPACK_IMPORTED_MODULE_0___default().post('/typing-test/api/record', resultObject, 'json').then(function (object) {
-          _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(object.status, object.recordRank, object.canUpdateRanking);
-          var recordRank = object.recordRank;
-          var canUpdateRanking = object.canUpdateRanking;
-          var displayTime = (resultTimeMs / 1000).toFixed(3);
-          var displayMessage = recordRank === 1 ? "\u65B0\u8A18\u9332\u9054\u6210\uFF01" : "\u7B2C".concat(recordRank, "\u4F4D");
-          output.text("finished!\nTime: ".concat(displayTime, "\n").concat(displayMessage));
-
-          if (canUpdateRanking) {
-            sendRecordToRankingButtonArea.show();
-          }
-        }, function (error) {
-          output.text('記録の保存に失敗しました');
-        });
-        return;
-      }
-
-      updateTypingText();
-    }
+    typingTest.input(inputText);
   }
-});
-sendRecordToRankingButtonArea.on('click', function () {
-  sendRecordToRankingButtonArea.prop('disabled', true);
+}); // 「ネットランキングに記録を送信」ボタン
 
-  if (timer === undefined) {
+sendRecordToRankingButtonArea.on('click', function () {
+  // ボタンを無効化
+  sendRecordToRankingButtonArea.prop('disabled', true);
+  var resultTimeMs = typingTest.resultTimeMs;
+  console.log(resultTimeMs);
+
+  if (resultTimeMs < 0) {
     return;
   }
 
-  var resultTimeMs = timer.getElapsedTimeMs();
-  var rankingObject = {
+  jquery__WEBPACK_IMPORTED_MODULE_0___default().post('/typing-test/api/ranking', {
     'timeMs': resultTimeMs
-  };
-  jquery__WEBPACK_IMPORTED_MODULE_0___default().post('/ranking/api/ranking', rankingObject, 'json');
+  }, 'json').then(function (object) {
+    _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(object.status, object.rankingRank);
+    var modalArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#modal');
+    modalArea.modal('show');
+    var resultModalBodyArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#resultModalBody');
+    resultModalBodyArea.text("\u3042\u306A\u305F\u306E\u8A18\u9332\u306F ".concat(object.rankingRank, " \u4F4D\u3067\u3059"));
+    sendRecordToRankingButtonArea.text('記録を送信しました');
+  }, function (error) {
+    outputArea.text('記録を送信できませんでした');
+  });
+}); // 「リトライ」ボタン
+
+retryButtonArea.on('click', function () {
+  typingTest.reset();
+  console.log('reset');
 });
 
 /***/ }),
@@ -18114,12 +18250,27 @@ var _timerArea = new WeakMap();
 
 var Timer = /*#__PURE__*/function () {
   /**
+   * タイマーが動いているかどうか
+   * @type {boolean}
+   */
+
+  /**
+   * 計測開始時間
+   * @type {number}
+   */
+
+  /**
+   * 経過時間
+   * @type {number}
+   */
+
+  /**
+   * タイマーの描画先
    * @type {jQuery}
    */
 
   /**
-   * 時間の計測を開始する
-   * @param {jQuery} timerArea
+   * @param {jQuery} timerArea タイマーの描画先
    */
   function Timer(timerArea) {
     var _this = this;
@@ -18146,40 +18297,68 @@ var Timer = /*#__PURE__*/function () {
       value: void 0
     });
 
-    _defineProperty(this, "calcTime", function () {
+    _defineProperty(this, "updateTime", function () {
       if (_classPrivateFieldGet(_this, _isRunningTimer)) {
         _classPrivateFieldSet(_this, _elapsedTimeMs, Date.now() - _classPrivateFieldGet(_this, _startTimeMs));
 
         _this.drawTime();
 
-        window.requestAnimationFrame(_this.calcTime);
+        window.requestAnimationFrame(_this.updateTime);
       }
     });
 
-    _classPrivateFieldSet(this, _isRunningTimer, true);
-
-    _classPrivateFieldSet(this, _startTimeMs, Date.now());
-
-    _classPrivateFieldSet(this, _elapsedTimeMs, 0);
+    _lib_assert__WEBPACK_IMPORTED_MODULE_0__.default.defined(timerArea);
 
     _classPrivateFieldSet(this, _timerArea, timerArea);
 
-    window.requestAnimationFrame(this.calcTime);
+    this.reset();
   }
   /**
-   * タイマーを止める
+   * 計測を開始する
    */
 
 
   _createClass(Timer, [{
+    key: "start",
+    value: function start() {
+      _classPrivateFieldSet(this, _isRunningTimer, true);
+
+      _classPrivateFieldSet(this, _startTimeMs, Date.now());
+
+      _classPrivateFieldSet(this, _elapsedTimeMs, 0);
+
+      window.requestAnimationFrame(this.updateTime);
+    }
+    /**
+     * タイマーを止める（タイムは保持する）
+     */
+
+  }, {
     key: "stop",
     value: function stop() {
       _classPrivateFieldSet(this, _isRunningTimer, false);
 
       _classPrivateFieldSet(this, _elapsedTimeMs, Date.now() - _classPrivateFieldGet(this, _startTimeMs));
+
+      this.drawTime();
+    }
+    /**
+     * タイマーをリセットする（タイムは破棄する）
+     */
+
+  }, {
+    key: "reset",
+    value: function reset() {
+      _classPrivateFieldSet(this, _isRunningTimer, false);
+
+      _classPrivateFieldSet(this, _elapsedTimeMs, 0);
+
+      this.drawTime();
     }
     /**
      * requestAnimationFrame のループで呼ばれる関数
+     *
+     * 現在の経過時間を計算し、描画する
      */
 
   }, {
@@ -18187,33 +18366,33 @@ var Timer = /*#__PURE__*/function () {
 
     /**
      * 現在の経過時間を描画する
+     *
      * 値は小数第1位まで表示する
      */
     value: function drawTime() {
-      _lib_assert__WEBPACK_IMPORTED_MODULE_0__.default.defined(_classPrivateFieldGet(this, _timerArea));
-
       _classPrivateFieldGet(this, _timerArea).text(this.getDisplayTime());
     }
     /**
-     * 現在の経過時間を返す
-     * @return {number} 経過時間(ms)
-     */
-
-  }, {
-    key: "getElapsedTimeMs",
-    value: function getElapsedTimeMs() {
-      return _classPrivateFieldGet(this, _elapsedTimeMs);
-    }
-    /**
-     * 表示する時間を小数（文字列）で返す
-     * 値は小数第1位まで表示する
-     * @return {string} 経過時間(s)
+     * 現在の経過時間 (ms)
+     * @type {number}
      */
 
   }, {
     key: "getDisplayTime",
+
+    /**
+     * 表示する時間を小数（文字列）で返す
+     *
+     * 値は小数第1位まで表示する
+     * @return {string} 経過時間(s)
+     */
     value: function getDisplayTime() {
-      return (this.getElapsedTimeMs() / 1000).toFixed(1);
+      return (this.elapsedTimeMs / 1000).toFixed(1);
+    }
+  }, {
+    key: "elapsedTimeMs",
+    get: function get() {
+      return _classPrivateFieldGet(this, _elapsedTimeMs);
     }
   }]);
 

@@ -58,6 +58,7 @@ var rankingRouter = require('./routes/ranking');
 var app = express();
 app.use(helmet({
   // CSPで unsafe-eval を許可しないと何故か動かない
+  // 参考：https://helmetjs.github.io
   contentSecurityPolicy: {
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
