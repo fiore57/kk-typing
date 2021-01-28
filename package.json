@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node node_modules/webpack/bin/webpack.js; node ./bin/www",
+    "start": "npx webpack; node ./bin/www",
     "test": "npx jest --testTimeout=10000 --forceExit"
   },
   "dependencies": {

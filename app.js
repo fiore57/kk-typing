@@ -56,7 +56,15 @@ var recordRouter = require('./routes/record');
 var rankingRouter = require('./routes/ranking');
 
 var app = express();
-app.use(helmet());
+app.use(helmet({
+  // CSPで unsafe-eval を許可しないと何故か動かない
+  contentSecurityPolicy: {
+    directives: {
+      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      "script-src": ["'self'", "'unsafe-eval'"]
+    }
+  }
+}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
