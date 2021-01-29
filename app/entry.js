@@ -6,12 +6,14 @@ global.jQuery = $;
 import bootstrap from 'bootstrap';
 import Timer from './timer';
 import assert from './lib/assert';
+import * as utils from './lib/utils';
 
 const messageArea = $('#message');
 const curTypingTextArea = $('#curTypingText');
 const typingInputArea = $('#typingInput');
 const nextTypingTextArea = $('#nextTypingText');
 const resultArea = $('#result')
+const resultBodyArea = $('#resultBody');
 const outputArea = $('#output');
 const resultButtonsArea = $('#resultButtons');
 const sendRecordToRankingButtonArea = $('#sendRecordToRanking');
@@ -46,7 +48,7 @@ class TypingTest {
     this.#timer = new Timer(timerArea);
     this.#typingTextList = [
       "これはダミーの文字列です。",
-      // "かな漢字変換込みのタイピングを練習できます。",
+      "<script>悪意のある文字列</script>",
       // "これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。"
     ];
     /*
@@ -71,8 +73,8 @@ class TypingTest {
     typingInputArea.val('');
     typingInputArea.trigger('focus');
     nextTypingTextArea.text(this.displayNextTypingText);
-    resultArea.text('');
     resultArea.hide();
+    resultBodyArea.text('');
     outputArea.text('');
     sendRecordToRankingButtonArea.hide();
     sendRecordToRankingButtonArea.prop('disabled', false);
@@ -88,8 +90,8 @@ class TypingTest {
     curTypingTextArea.text(this.curTypingText);
     typingInputArea.val('');
     nextTypingTextArea.text(this.displayNextTypingText);
-    resultArea.text('');
     resultArea.hide();
+    resultBodyArea.text('');
     outputArea.text('');
     sendRecordToRankingButtonArea.hide();
     sendRecordToRankingButtonArea.prop('disabled', false);
@@ -102,6 +104,7 @@ class TypingTest {
    */
   input(inputText) {
     if (inputText === this.#typingTextList[this.#curTypingTextIndex]) {
+      // 入力文字列が正しい場合
       typingInputArea.val('');
       ++this.#curTypingTextIndex;
       if (this.#curTypingTextIndex === this.#typingTextList.length) {
@@ -111,6 +114,40 @@ class TypingTest {
       curTypingTextArea.text(this.curTypingText);
       nextTypingTextArea.text(this.displayNextTypingText);
     }
+    else {
+      // 入力文字列に誤りがある場合
+      // WARNING: エスケープされていない文字列を入れないこと！！！
+      curTypingTextArea.html(this.getTextDiffStringIncludesSpanTag(inputText));
+    }
+  }
+  /**
+   * curTypingText のうち、入力された文字列と一致
+   * する文字を灰色に、異なる文字を赤色にする span
+   * タグを付けた文字列を返す（未入力の文字はタグなし）
+   * @param {string} inputText 入力された文字列
+   * @return {string} curTypingText に span タグを付与したもの
+   */
+  getTextDiffStringIncludesSpanTag(inputText) {
+    assert.defined(inputText);
+
+    const curTypingText = this.#typingTextList[this.#curTypingTextIndex];
+    const lastIndex = Math.min(inputText.length, curTypingText.length);
+    let res = "";
+
+    for (let i = 0; i < lastIndex; ++i) {
+      if (inputText[i] === curTypingText[i]) {
+        // 一致する（入力済み）なら灰色
+        res += `<span style="color:#cccccc;">${utils.escapeText(curTypingText[i])}</span>`
+      }
+      else {
+        // 一致しない（誤り）なら赤色（下線付き）
+        res += `<span class="border-bottom border-secondary" style="color:red">${utils.escapeText(curTypingText[i])}</span>`
+      }
+    }
+    // 未入力なら黒色
+    res += utils.escapeText(curTypingText.substring(lastIndex));
+
+    return res;
   }
   /**
    * 打ち終わったときの処理
@@ -135,9 +172,9 @@ class TypingTest {
           recordRank === 1
             ? `新記録達成！`
             : `第${recordRank}位`;
-        // ユーザーが弄れる文字列を入れない！
-        resultArea.html(
-          `Finished!<br>Time: ${displayTime}<br>${displayMessage}`
+        // WARNING: エスケープされていない文字列を入れないこと！！！
+        resultBodyArea.html(
+          `Time: ${utils.escapeText(displayTime)}<br>${utils.escapeText(displayMessage)}`
         );
 
         resultArea.show();
@@ -224,8 +261,16 @@ $(document.body).on('keydown', event => {
 });
 
 // タイピングテスト中、入力した文字列の確定用
+/*
 typingInputArea.on('keypress', event => {
   if (typingTest.isInTest && event.key === 'Enter') {
+    const inputText = typingInputArea.val();
+    typingTest.input(inputText);
+  }
+});
+*/
+typingInputArea.on('change', event => {
+  if (typingTest.isInTest) {
     const inputText = typingInputArea.val();
     typingTest.input(inputText);
   }

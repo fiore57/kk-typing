@@ -11,6 +11,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(bootstrap__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _timer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4);
 /* harmony import */ var _lib_assert__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(5);
+/* harmony import */ var _lib_utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(6);
 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -29,11 +30,13 @@ global.jQuery = (jquery__WEBPACK_IMPORTED_MODULE_0___default());
 
 
 
+
 var messageArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#message');
 var curTypingTextArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#curTypingText');
 var typingInputArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#typingInput');
 var nextTypingTextArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#nextTypingText');
 var resultArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#result');
+var resultBodyArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#resultBody');
 var outputArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#output');
 var resultButtonsArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#resultButtons');
 var sendRecordToRankingButtonArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#sendRecordToRanking');
@@ -96,8 +99,7 @@ var TypingTest = /*#__PURE__*/function () {
 
     _classPrivateFieldSet(this, _timer, new _timer__WEBPACK_IMPORTED_MODULE_2__.default(timerArea));
 
-    _classPrivateFieldSet(this, _typingTextList, ["これはダミーの文字列です。" // "かな漢字変換込みのタイピングを練習できます。",
-    // "これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。"
+    _classPrivateFieldSet(this, _typingTextList, ["これはダミーの文字列です。", "<script>悪意のある文字列</script>" // "これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。"
     ]);
     /*
     $.get('/typing-test/api/get-text').then(
@@ -128,8 +130,8 @@ var TypingTest = /*#__PURE__*/function () {
       typingInputArea.val('');
       typingInputArea.trigger('focus');
       nextTypingTextArea.text(this.displayNextTypingText);
-      resultArea.text('');
       resultArea.hide();
+      resultBodyArea.text('');
       outputArea.text('');
       sendRecordToRankingButtonArea.hide();
       sendRecordToRankingButtonArea.prop('disabled', false);
@@ -149,8 +151,8 @@ var TypingTest = /*#__PURE__*/function () {
       curTypingTextArea.text(this.curTypingText);
       typingInputArea.val('');
       nextTypingTextArea.text(this.displayNextTypingText);
-      resultArea.text('');
       resultArea.hide();
+      resultBodyArea.text('');
       outputArea.text('');
       sendRecordToRankingButtonArea.hide();
       sendRecordToRankingButtonArea.prop('disabled', false);
@@ -166,6 +168,7 @@ var TypingTest = /*#__PURE__*/function () {
     key: "input",
     value: function input(inputText) {
       if (inputText === _classPrivateFieldGet(this, _typingTextList)[_classPrivateFieldGet(this, _curTypingTextIndex)]) {
+        // 入力文字列が正しい場合
         typingInputArea.val('');
 
         _classPrivateFieldSet(this, _curTypingTextIndex, +_classPrivateFieldGet(this, _curTypingTextIndex) + 1);
@@ -177,7 +180,43 @@ var TypingTest = /*#__PURE__*/function () {
 
         curTypingTextArea.text(this.curTypingText);
         nextTypingTextArea.text(this.displayNextTypingText);
+      } else {
+        // 入力文字列に誤りがある場合
+        // WARNING: エスケープされていない文字列を入れないこと！！！
+        curTypingTextArea.html(this.getTextDiffStringIncludesSpanTag(inputText));
       }
+    }
+    /**
+     * curTypingText のうち、入力された文字列と一致
+     * する文字を灰色に、異なる文字を赤色にする span
+     * タグを付けた文字列を返す（未入力の文字はタグなし）
+     * @param {string} inputText 入力された文字列
+     * @return {string} curTypingText に span タグを付与したもの
+     */
+
+  }, {
+    key: "getTextDiffStringIncludesSpanTag",
+    value: function getTextDiffStringIncludesSpanTag(inputText) {
+      _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(inputText);
+
+      var curTypingText = _classPrivateFieldGet(this, _typingTextList)[_classPrivateFieldGet(this, _curTypingTextIndex)];
+
+      var lastIndex = Math.min(inputText.length, curTypingText.length);
+      var res = "";
+
+      for (var i = 0; i < lastIndex; ++i) {
+        if (inputText[i] === curTypingText[i]) {
+          // 一致する（入力済み）なら灰色
+          res += "<span style=\"color:#cccccc;\">".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(curTypingText[i]), "</span>");
+        } else {
+          // 一致しない（誤り）なら赤色（下線付き）
+          res += "<span class=\"border-bottom border-secondary\" style=\"color:red\">".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(curTypingText[i]), "</span>");
+        }
+      } // 未入力なら黒色
+
+
+      res += _lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(curTypingText.substring(lastIndex));
+      return res;
     }
     /**
      * 打ち終わったときの処理
@@ -203,9 +242,9 @@ var TypingTest = /*#__PURE__*/function () {
         var canUpdateRanking = object.canUpdateRanking; // 結果の表示
 
         var displayTime = (resultTimeMs / 1000).toFixed(3);
-        var displayMessage = recordRank === 1 ? "\u65B0\u8A18\u9332\u9054\u6210\uFF01" : "\u7B2C".concat(recordRank, "\u4F4D"); // ユーザーが弄れる文字列を入れない！
+        var displayMessage = recordRank === 1 ? "\u65B0\u8A18\u9332\u9054\u6210\uFF01" : "\u7B2C".concat(recordRank, "\u4F4D"); // WARNING: エスケープされていない文字列を入れないこと！！！
 
-        resultArea.html("Finished!<br>Time: ".concat(displayTime, "<br>").concat(displayMessage));
+        resultBodyArea.html("Time: ".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayTime), "<br>").concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayMessage)));
         resultArea.show();
         resultButtonsArea.show();
 
@@ -306,8 +345,17 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()(document.body).on('keydown', funct
   }
 }); // タイピングテスト中、入力した文字列の確定用
 
-typingInputArea.on('keypress', function (event) {
+/*
+typingInputArea.on('keypress', event => {
   if (typingTest.isInTest && event.key === 'Enter') {
+    const inputText = typingInputArea.val();
+    typingTest.input(inputText);
+  }
+});
+*/
+
+typingInputArea.on('change', function (event) {
+  if (typingTest.isInTest) {
     var inputText = typingInputArea.val();
     typingTest.input(inputText);
   }
@@ -18464,7 +18512,7 @@ var Timer = /*#__PURE__*/function () {
      * 値は小数第1位まで表示する
      */
     value: function drawTime() {
-      _classPrivateFieldGet(this, _timerArea).text(this.getDisplayTime());
+      _classPrivateFieldGet(this, _timerArea).text(this.displayTime);
     }
     /**
      * 現在の経過時間 (ms)
@@ -18472,21 +18520,21 @@ var Timer = /*#__PURE__*/function () {
      */
 
   }, {
-    key: "getDisplayTime",
-
+    key: "elapsedTimeMs",
+    get: function get() {
+      return _classPrivateFieldGet(this, _elapsedTimeMs);
+    }
     /**
      * 表示する時間を小数（文字列）で返す
      *
      * 値は小数第1位まで表示する
      * @return {string} 経過時間(s)
      */
-    value: function getDisplayTime() {
-      return (this.elapsedTimeMs / 1000).toFixed(1);
-    }
+
   }, {
-    key: "elapsedTimeMs",
+    key: "displayTime",
     get: function get() {
-      return _classPrivateFieldGet(this, _elapsedTimeMs);
+      return (this.elapsedTimeMs / 1000).toFixed(1);
     }
   }]);
 
@@ -18544,6 +18592,33 @@ var assert = /*#__PURE__*/function () {
 }();
 
 
+
+/***/ }),
+/* 6 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "escapeText": () => /* binding */ escapeText
+/* harmony export */ });
+/* harmony import */ var _assert__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1);
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_1__);
+
+
+
+
+/**
+ * エスケープ処理を行う
+ * @param {string} value エスケープする文字列
+ * @return {string} エスケープされた文字列
+ */
+
+function escapeText(value) {
+  _assert__WEBPACK_IMPORTED_MODULE_0__.default.defined(value);
+  return jquery__WEBPACK_IMPORTED_MODULE_1___default()('<div />').text(value).html();
+}
 
 /***/ })
 /******/ 	]);

@@ -7,7 +7,10 @@ block content
   div
     div.d-flex.my-3
       div(role="alert")#message.p-2.mr-auto.h5.alert.alert-light Enter または Space を押してスタート
-      div#timer.p-2.border.w-25.text-right.h4 0.0
+      div(style="font-size:x-large;width:12rem;").p-2.border.d-flex
+        div.ml-2.mr-auto.text-left Time:
+        div#timer.mr-2.text-right.text-monospace 0.0
+
     -
       const disallowCopy = {
         "user-select": "none",
@@ -21,7 +24,9 @@ block content
     p(style=disallowCopy)#curTypingText.lead
     input(type="text" autofocus spellcheck="false" style="min-width: 15rem")#typingInput.form-control.input-lg.my-3
     p(style=disallowCopy)#nextTypingText
-    p(style="line-height:2; width:15rem; display:none")#result.mx-auto.my-5.py-4.h4.text-center.border.border-secondary.border-2.rounded
+    div(style="width:15rem; display:none")#result.card.mx-auto.my-5.py-4.text-center
+      h4.card-title.my-2 Result
+      p(style="line-height:2;")#resultBody.card-text.h5
     //- 終了後に表示するボタン群
     div.btn-toolbar(role="toolbar")
       div(style="display:none")#resultButtons.mx-auto
