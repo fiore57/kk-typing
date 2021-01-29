@@ -73,7 +73,7 @@ var TypingTest = /*#__PURE__*/function () {
    * 入力する文字列のリスト
    * @type {Array<string>}
    */
-  function TypingTest() {
+  function TypingTest(typingTextList) {
     _classCallCheck(this, TypingTest);
 
     _isInTest.set(this, {
@@ -96,23 +96,12 @@ var TypingTest = /*#__PURE__*/function () {
       value: void 0
     });
 
+    _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(typingTextList);
     var timerArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#timer');
 
     _classPrivateFieldSet(this, _timer, new _timer__WEBPACK_IMPORTED_MODULE_2__.default(timerArea));
 
-    _classPrivateFieldSet(this, _typingTextList, ["これはダミーの文字列です。", "<script>悪意のある文字列</script>" // "これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。"
-    ]);
-    /*
-    $.get('/typing-test/api/get-text').then(
-      object => {
-        this.#typingTextList = object.textList;
-      },
-      error => {
-        console.error('文章の取得に失敗しました');
-      }
-    );
-    */
-
+    _classPrivateFieldSet(this, _typingTextList, typingTextList);
 
     this.reset();
   }
@@ -124,6 +113,8 @@ var TypingTest = /*#__PURE__*/function () {
   _createClass(TypingTest, [{
     key: "start",
     value: function start() {
+      this.reset();
+
       _classPrivateFieldSet(this, _isInTest, true);
 
       _classPrivateFieldSet(this, _curTypingTextIndex, 0);
@@ -132,16 +123,8 @@ var TypingTest = /*#__PURE__*/function () {
 
       messageArea.text('Esc でリセット');
       curTypingTextArea.text(this.curTypingText);
-      typingInputArea.val('');
-      typingInputArea.trigger('focus');
       nextTypingTextArea.text(this.displayNextTypingText);
-      resultArea.hide();
-      resultBodyArea.text('');
-      outputArea.text('');
-      sendRecordToRankingButtonArea.hide();
-      sendRecordToRankingButtonArea.prop('disabled', false);
-      sendRecordToRankingButtonArea.text('ネットランキングに記録を送信');
-      resultButtonsArea.hide();
+      typingInputArea.trigger('focus');
     }
     /**
      * リセット処理
@@ -179,8 +162,7 @@ var TypingTest = /*#__PURE__*/function () {
       _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(inputText); // 入力された文字列と curTypingText の差分を表示
 
       curTypingTextArea.html(this.getTextDiffStringIncludesSpanTag(inputText));
-
-      var isCorrectInput = inputText === _classPrivateFieldGet(this, _typingTextList)[_classPrivateFieldGet(this, _curTypingTextIndex)];
+      var isCorrectInput = inputText === this.curTypingText;
 
       if (isCorrectInput) {
         // 入力文字列が正しい場合
@@ -212,9 +194,7 @@ var TypingTest = /*#__PURE__*/function () {
     key: "getTextDiffStringIncludesSpanTag",
     value: function getTextDiffStringIncludesSpanTag(inputText) {
       _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(inputText);
-
-      var curTypingText = _classPrivateFieldGet(this, _typingTextList)[_classPrivateFieldGet(this, _curTypingTextIndex)];
-
+      var curTypingText = this.curTypingText;
       var lastIndex = Math.min(inputText.length, curTypingText.length);
       var res = "";
 
@@ -347,7 +327,14 @@ var TypingTest = /*#__PURE__*/function () {
   return TypingTest;
 }();
 
-var typingTest = new TypingTest(); // タイピングテストの開始・リセット用
+var typingTest; // typingTextList を取得
+
+jquery__WEBPACK_IMPORTED_MODULE_0___default().get('/typing-test/api/get-text').then(function (object) {
+  var typingTextList = object.textList;
+  typingTest = new TypingTest(typingTextList);
+}, function (error) {
+  console.error('文章の取得に失敗しました');
+}); // タイピングテストの開始・リセット用
 
 jquery__WEBPACK_IMPORTED_MODULE_0___default()(document.body).on('keydown', function (event) {
   var startKeyList = ['Enter', ' '];
@@ -360,15 +347,6 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()(document.body).on('keydown', funct
     typingTest.reset();
   }
 }); // タイピングテスト中、入力した文字列の確定用
-
-/*
-typingInputArea.on('keypress', event => {
-  if (typingTest.isInTest && event.key === 'Enter') {
-    const inputText = typingInputArea.val();
-    typingTest.input(inputText);
-  }
-});
-*/
 
 typingInputArea.on('change', function (event) {
   if (typingTest.isInTest) {

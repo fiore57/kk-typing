@@ -44,45 +44,25 @@ class TypingTest {
    */
   #typingTextList;
 
-  constructor() {
+  constructor(typingTextList) {
+    assert.defined(typingTextList);
     const timerArea = $('#timer');
     this.#timer = new Timer(timerArea);
-    this.#typingTextList = [
-      "これはダミーの文字列です。",
-      "<script>悪意のある文字列</script>",
-      // "これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。"
-    ];
-    /*
-    $.get('/typing-test/api/get-text').then(
-      object => {
-        this.#typingTextList = object.textList;
-      },
-      error => {
-        console.error('文章の取得に失敗しました');
-      }
-    );
-    */
+    this.#typingTextList = typingTextList;
     this.reset();
   }
   /**
    * 開始処理
    */
   start() {
+    this.reset();
     this.#isInTest = true;
     this.#curTypingTextIndex = 0;
     this.#timer.start();
     messageArea.text('Esc でリセット');
     curTypingTextArea.text(this.curTypingText);
-    typingInputArea.val('');
-    typingInputArea.trigger('focus');
     nextTypingTextArea.text(this.displayNextTypingText);
-    resultArea.hide();
-    resultBodyArea.text('');
-    outputArea.text('');
-    sendRecordToRankingButtonArea.hide();
-    sendRecordToRankingButtonArea.prop('disabled', false);
-    sendRecordToRankingButtonArea.text('ネットランキングに記録を送信');
-    resultButtonsArea.hide();
+    typingInputArea.trigger('focus');
   }
   /**
    * リセット処理
@@ -113,7 +93,7 @@ class TypingTest {
     // 入力された文字列と curTypingText の差分を表示
     curTypingTextArea.html(this.getTextDiffStringIncludesSpanTag(inputText));
 
-    const isCorrectInput = (inputText === this.#typingTextList[this.#curTypingTextIndex]);
+    const isCorrectInput = (inputText === this.curTypingText);
     if (isCorrectInput) {
       // 入力文字列が正しい場合
       typingInputArea.val('');
@@ -138,7 +118,7 @@ class TypingTest {
   getTextDiffStringIncludesSpanTag(inputText) {
     assert.defined(inputText);
 
-    const curTypingText = this.#typingTextList[this.#curTypingTextIndex];
+    const curTypingText = this.curTypingText;
     const lastIndex = Math.min(inputText.length, curTypingText.length);
     let res = "";
 
@@ -257,7 +237,18 @@ class TypingTest {
   }
 }
 
-const typingTest = new TypingTest();
+let typingTest;
+
+// typingTextList を取得
+$.get('/typing-test/api/get-text').then(
+  object => {
+    const typingTextList = object.textList;
+    typingTest = new TypingTest(typingTextList);
+  },
+  error => {
+    console.error('文章の取得に失敗しました');
+  }
+);
 
 // タイピングテストの開始・リセット用
 $(document.body).on('keydown', event => {
@@ -273,14 +264,6 @@ $(document.body).on('keydown', event => {
 });
 
 // タイピングテスト中、入力した文字列の確定用
-/*
-typingInputArea.on('keypress', event => {
-  if (typingTest.isInTest && event.key === 'Enter') {
-    const inputText = typingInputArea.val();
-    typingTest.input(inputText);
-  }
-});
-*/
 typingInputArea.on('change', event => {
   if (typingTest.isInTest) {
     const inputText = typingInputArea.val();
