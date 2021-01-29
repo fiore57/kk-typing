@@ -8,20 +8,21 @@ block content
     div.d-flex.my-3
       div(role="alert")#message.p-2.mr-auto.h5.alert.alert-light Enter または Space を押してスタート
       div#timer.p-2.border.w-25.text-right.h4 0.0
-    p#typingText.lead
-    input(type="text" autofocus spellcheck="false")#typingInput.form-control.input-lg.my-3
-    div(role="dialog" aria-hidden="true")#modal.modal.fade
-      div(role="document").modal-dialog
-        div.modal-content
-          div.modal-header
-            h5.modal-title Result
-            button(type="button", data-dismiss="modal", area-label="Close").close
-              span(aria-hidden="true") &times;
-          div.modal-body
-            p#resultModalBody
-          div.modal-footer
-            button(type="button" data-dismiss="modal").btn.btn-secondary 閉じる
-    p#result.h4.my-5
+    -
+      const disallowCopy = {
+        "user-select": "none",
+        "-webkit-user-select": "none",
+        "-moz-user-select": "none",
+        "-ms-user-select": "none",
+        "-khtml-user-select": "none",
+        "-webkit-user-drag": "none",
+        "-khtml-user-drag": "none",
+      };
+    p(style=disallowCopy)#curTypingText.lead
+    input(type="text" autofocus spellcheck="false" style="min-width: 15rem")#typingInput.form-control.input-lg.my-3
+    p(style=disallowCopy)#nextTypingText
+    p(style="line-height:2; width:15rem; display:none")#result.mx-auto.my-5.py-4.h4.text-center.border.border-secondary.border-2.rounded
+    //- 終了後に表示するボタン群
     div.btn-toolbar(role="toolbar")
       div(style="display:none")#resultButtons.mx-auto
         button(type="button" style="display:none")#sendRecordToRanking.btn.btn-primary.mx-2.my-1 ネットランキングに記録を送信
@@ -29,4 +30,16 @@ block content
         a(href="/record" role="button").btn.btn-info.mx-2.my-1 自分の記録を見る
         a(href="/ranking" role="button").btn.btn-info.mx-2.my-1 ネットランキングを見る
     p#output
+  //- モーダル
+  div(role="dialog" aria-hidden="true")#modal.modal.fade
+    div(role="document").modal-dialog
+      div.modal-content
+        div.modal-header
+          h5#modalTitle.modal-title
+          button(type="button", data-dismiss="modal", area-label="Close").close
+            span(aria-hidden="true") &times;
+        div.modal-body
+          p#modalBody
+        div.modal-footer
+          button(type="button" data-dismiss="modal").btn.btn-secondary 閉じる
 

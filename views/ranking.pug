@@ -9,7 +9,8 @@ block content
       th(scope="col") Name
       th(scope="col") Date
     each ranking in rankings
-      tr
+      - const isUserRecord = (parseInt(user.id) === parseInt(ranking.user.userId));
+      tr(class={ "table-primary": isUserRecord })
         td #{ranking.rank}
         td #{(ranking.time / 1000).toFixed(3)}
         td #{ranking.user.username}

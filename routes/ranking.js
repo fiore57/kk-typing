@@ -7,10 +7,12 @@ const User = require('../models/user');
 const moment = require('moment-timezone');
 const loader = require('../models/sequelize-loader');
 const Sequelize = loader.Sequelize;
+const asyncHandler = require('express-async-handler');
 
-router.get('/', authenticationEnsurer, (req, res, next) => {
+router.get('/', authenticationEnsurer, asyncHandler(async (req, res, next) => {
+  // ランキングを順位と共に取得
   // SELECT RANK() OVER (ORDER BY time ASC) AS rank, * FROM rankings ORDER BY time ASC, "updatedAt" ASC; みたいな感じ
-  Ranking.findAll({
+  const rankings = await Ranking.findAll({
     include: [
       {
         model: User,
@@ -26,16 +28,21 @@ router.get('/', authenticationEnsurer, (req, res, next) => {
     ],
     raw: true,
     nest: true
-  }).then(rankings => {
-    rankings.forEach(ranking => {
-      // 更新日のみを表示するようフォーマット
-      ranking.formattedUpdatedAt = moment(ranking.updatedAt).tz('Azia/Tokyo').format('YYYY/MM/DD');
-    });
-    res.render('ranking', {
-      user: req.user,
-      rankings: rankings
-    });
   });
-});
+
+  // 更新日のみを表示するようフォーマット
+  rankings.forEach(ranking => {
+    ranking.formattedUpdatedAt = moment(ranking.updatedAt).tz('Azia/Tokyo').format('YYYY/MM/DD');
+  });
+
+  console.log(rankings);
+  console.log(req.user);
+  console.log(rankings[0].user.userId);
+
+  res.render('ranking', {
+    user: req.user,
+    rankings: rankings
+  });
+}));
 
 module.exports = router;

@@ -30,33 +30,22 @@ global.jQuery = (jquery__WEBPACK_IMPORTED_MODULE_0___default());
 
 
 var messageArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#message');
-var typingTextArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#typingText');
+var curTypingTextArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#curTypingText');
 var typingInputArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#typingInput');
+var nextTypingTextArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#nextTypingText');
 var resultArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#result');
 var outputArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#output');
 var resultButtonsArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#resultButtons');
 var sendRecordToRankingButtonArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#sendRecordToRanking');
-var retryButtonArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#retryButton'); // TODO: コメントアウト
-
-/*
-let typingTextList;
-$.get('/typing-test/api/get-text').then(
-  object => {
-    typingTextList = object.textList;
-  },
-  error => {
-    console.error('文章の取得に失敗しました');
-  }
-);
-*/
-
-var typingTextList = ["これはテストです。", "かな漢字変換込みのタイピングを練習できます。"];
+var retryButtonArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#retryButton');
 
 var _isInTest = new WeakMap();
 
 var _timer = new WeakMap();
 
 var _curTypingTextIndex = new WeakMap();
+
+var _typingTextList = new WeakMap();
 
 var TypingTest = /*#__PURE__*/function () {
   /**
@@ -70,8 +59,15 @@ var TypingTest = /*#__PURE__*/function () {
    */
 
   /**
-   * 現在入力している typingTextList の index
+   * 現在入力している this.#typingTextList の index
+   *
+   * 開始前は -1
    * @type {number}
+   */
+
+  /**
+   * 入力する文字列のリスト
+   * @type {Array<string>}
    */
   function TypingTest() {
     _classCallCheck(this, TypingTest);
@@ -88,12 +84,34 @@ var TypingTest = /*#__PURE__*/function () {
 
     _curTypingTextIndex.set(this, {
       writable: true,
-      value: 0
+      value: -1
+    });
+
+    _typingTextList.set(this, {
+      writable: true,
+      value: void 0
     });
 
     var timerArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#timer');
 
     _classPrivateFieldSet(this, _timer, new _timer__WEBPACK_IMPORTED_MODULE_2__.default(timerArea));
+
+    _classPrivateFieldSet(this, _typingTextList, ["これはダミーの文字列です。" // "かな漢字変換込みのタイピングを練習できます。",
+    // "これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。"
+    ]);
+    /*
+    $.get('/typing-test/api/get-text').then(
+      object => {
+        this.#typingTextList = object.textList;
+      },
+      error => {
+        console.error('文章の取得に失敗しました');
+      }
+    );
+    */
+
+
+    this.reset();
   }
 
   _createClass(TypingTest, [{
@@ -106,10 +124,12 @@ var TypingTest = /*#__PURE__*/function () {
       _classPrivateFieldGet(this, _timer).start();
 
       messageArea.text('Esc でリセット');
-      typingTextArea.text(typingTextList[_classPrivateFieldGet(this, _curTypingTextIndex)]);
+      curTypingTextArea.text(this.curTypingText);
       typingInputArea.val('');
       typingInputArea.trigger('focus');
+      nextTypingTextArea.text(this.displayNextTypingText);
       resultArea.text('');
+      resultArea.hide();
       outputArea.text('');
       sendRecordToRankingButtonArea.hide();
       sendRecordToRankingButtonArea.prop('disabled', false);
@@ -121,36 +141,48 @@ var TypingTest = /*#__PURE__*/function () {
     value: function reset() {
       _classPrivateFieldSet(this, _isInTest, false);
 
-      _classPrivateFieldSet(this, _curTypingTextIndex, 0);
+      _classPrivateFieldSet(this, _curTypingTextIndex, -1);
 
       _classPrivateFieldGet(this, _timer).reset();
 
       messageArea.text('Enter または Space を押してスタート');
-      typingTextArea.text('');
+      curTypingTextArea.text(this.curTypingText);
       typingInputArea.val('');
+      nextTypingTextArea.text(this.displayNextTypingText);
       resultArea.text('');
+      resultArea.hide();
       outputArea.text('');
       sendRecordToRankingButtonArea.hide();
       sendRecordToRankingButtonArea.prop('disabled', false);
       sendRecordToRankingButtonArea.text('ネットランキングに記録を送信');
       resultButtonsArea.hide();
     }
+    /**
+     * 入力文字列が確定されたときの処理
+     * @param {string} inputText 入力された文字列
+     */
+
   }, {
     key: "input",
     value: function input(inputText) {
-      if (inputText === typingTextList[_classPrivateFieldGet(this, _curTypingTextIndex)]) {
+      if (inputText === _classPrivateFieldGet(this, _typingTextList)[_classPrivateFieldGet(this, _curTypingTextIndex)]) {
         typingInputArea.val('');
 
         _classPrivateFieldSet(this, _curTypingTextIndex, +_classPrivateFieldGet(this, _curTypingTextIndex) + 1);
 
-        if (_classPrivateFieldGet(this, _curTypingTextIndex) === typingTextList.length) {
+        if (_classPrivateFieldGet(this, _curTypingTextIndex) === _classPrivateFieldGet(this, _typingTextList).length) {
           this.finish();
           return;
         }
 
-        typingTextArea.text(typingTextList[_classPrivateFieldGet(this, _curTypingTextIndex)]);
+        curTypingTextArea.text(this.curTypingText);
+        nextTypingTextArea.text(this.displayNextTypingText);
       }
     }
+    /**
+     * 打ち終わったときの処理
+     */
+
   }, {
     key: "finish",
     value: function finish() {
@@ -160,18 +192,21 @@ var TypingTest = /*#__PURE__*/function () {
 
       _classPrivateFieldGet(this, _timer).stop();
 
-      var resultTimeMs = _classPrivateFieldGet(this, _timer).elapsedTimeMs;
+      var resultTimeMs = _classPrivateFieldGet(this, _timer).elapsedTimeMs; // 結果を記録する
 
-      var resultObject = {
-        "timeMs": resultTimeMs
-      };
-      jquery__WEBPACK_IMPORTED_MODULE_0___default().post('/typing-test/api/record', resultObject, 'json').then(function (object) {
+
+      jquery__WEBPACK_IMPORTED_MODULE_0___default().post('/typing-test/api/record', {
+        'timeMs': resultTimeMs
+      }, 'json').then(function (object) {
         _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(object.status, object.recordRank, object.canUpdateRanking);
-        var recordRank = object.recordRank;
-        var canUpdateRanking = object.canUpdateRanking;
+        var recordRank = parseInt(object.recordRank);
+        var canUpdateRanking = object.canUpdateRanking; // 結果の表示
+
         var displayTime = (resultTimeMs / 1000).toFixed(3);
-        var displayMessage = recordRank === 1 ? "\u65B0\u8A18\u9332\u9054\u6210\uFF01" : "\u7B2C".concat(recordRank, "\u4F4D");
-        resultArea.text("finished!\nTime: ".concat(displayTime, "\n").concat(displayMessage));
+        var displayMessage = recordRank === 1 ? "\u65B0\u8A18\u9332\u9054\u6210\uFF01" : "\u7B2C".concat(recordRank, "\u4F4D"); // ユーザーが弄れる文字列を入れない！
+
+        resultArea.html("Finished!<br>Time: ".concat(displayTime, "<br>").concat(displayMessage));
+        resultArea.show();
         resultButtonsArea.show();
 
         if (canUpdateRanking) {
@@ -182,7 +217,8 @@ var TypingTest = /*#__PURE__*/function () {
       });
     }
     /**
-     * テスト中か否か
+     * タイピングテスト中か否か
+     * @type {boolean}
      */
 
   }, {
@@ -203,44 +239,95 @@ var TypingTest = /*#__PURE__*/function () {
       if (_classPrivateFieldGet(this, _isInTest) || _classPrivateFieldGet(this, _timer).elapsedTimeMs === 0) return -1;
       return _classPrivateFieldGet(this, _timer).elapsedTimeMs;
     }
+    /**
+     * 現在の文字列
+     *
+     * 現在の文字列が存在しない場合（開始前を含む）、空文字列を返す
+     * @type {string}
+     */
+
+  }, {
+    key: "curTypingText",
+    get: function get() {
+      var curIndex = _classPrivateFieldGet(this, _curTypingTextIndex);
+
+      var list = _classPrivateFieldGet(this, _typingTextList);
+
+      if (curIndex < 0 || curIndex >= list.length) return '';else return list[curIndex];
+    }
+    /**
+     * 次の文字列
+     *
+     * 次の文字列が存在しない場合、空文字列を返す
+     * @type {string}
+     */
+
+  }, {
+    key: "nextTypingText",
+    get: function get() {
+      var nextIndex = _classPrivateFieldGet(this, _curTypingTextIndex) + 1;
+
+      var list = _classPrivateFieldGet(this, _typingTextList);
+
+      if (nextIndex < 0 || nextIndex >= list.length) return '';else return list[nextIndex];
+    }
+    /**
+     * 次の文字列の先頭 30 文字に 'NEXT: ' という prefix を付けたもの
+     *
+     * 次の文字列が 30 文字より長い場合、 '...' という suffix を付ける
+     * @type {string}
+     */
+
+  }, {
+    key: "displayNextTypingText",
+    get: function get() {
+      var text = this.nextTypingText;
+      var len = 30;
+      var textSubstr = text.substring(0, len);
+      var suffix = text.length <= len ? '' : '...';
+      return "NEXT: ".concat(textSubstr).concat(suffix);
+    }
   }]);
 
   return TypingTest;
 }();
 
-var typingTest = new TypingTest();
-var startKeyList = ['Enter', ' '];
-var resetKeyList = ['Escape'];
-/*
-document.body.addEventListener('keydown',
-  event => {
-    console.log(event.key);
-    if (!typingTest.isInTest && startKeyList.includes(event.key)) {
-      typingTest.start();
-      return;
-    }
-    if (typingTest.isInTest && resetKeyList.includes(event.key)) {
-      typingTest.reset();
-      return;
-    }
-  });
-*/
+var typingTest = new TypingTest(); // タイピングテストの開始・リセット用
 
 jquery__WEBPACK_IMPORTED_MODULE_0___default()(document.body).on('keydown', function (event) {
+  var startKeyList = ['Enter', ' '];
+  var resetKeyList = ['Escape'];
+
   if (!typingTest.isInTest && startKeyList.includes(event.key)) {
     typingTest.start();
-  } else if (typingTest.isInTest && resetKeyList.includes(event.key)) {
+  } else if (resetKeyList.includes(event.key)) {
+    // Vimmium を使っていると、typingInputArea にフォーカスがあるときに Esc が検出されない
     typingTest.reset();
   }
-});
-typingInputArea.on('keypress', function (event) {
-  console.log(event);
+}); // タイピングテスト中、入力した文字列の確定用
 
+typingInputArea.on('keypress', function (event) {
   if (typingTest.isInTest && event.key === 'Enter') {
     var inputText = typingInputArea.val();
     typingTest.input(inputText);
   }
-}); // 「ネットランキングに記録を送信」ボタン
+});
+/**
+ * モーダルを出す
+ * @param {string} title モーダルのタイトル
+ * @param {string} body モーダルの本文
+ */
+
+function showModal(title, body) {
+  _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(title, body);
+  var modalArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#modal');
+  modalArea.modal('show');
+  var modalTitleArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#modalTitle');
+  modalTitleArea.text(title);
+  var modalBodyArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#modalBody');
+  modalBodyArea.text(body);
+} // 「ネットランキングに記録を送信」ボタン
+
 
 sendRecordToRankingButtonArea.on('click', function () {
   // ボタンを無効化
@@ -248,18 +335,17 @@ sendRecordToRankingButtonArea.on('click', function () {
   var resultTimeMs = typingTest.resultTimeMs;
   console.log(resultTimeMs);
 
-  if (resultTimeMs < 0) {
+  if (resultTimeMs <= 0) {
+    outputArea.text('記録を送信できませんでした');
     return;
-  }
+  } // 記録を送信する
+
 
   jquery__WEBPACK_IMPORTED_MODULE_0___default().post('/typing-test/api/ranking', {
     'timeMs': resultTimeMs
   }, 'json').then(function (object) {
     _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(object.status, object.rankingRank);
-    var modalArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#modal');
-    modalArea.modal('show');
-    var resultModalBodyArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#resultModalBody');
-    resultModalBodyArea.text("\u3042\u306A\u305F\u306E\u8A18\u9332\u306F ".concat(object.rankingRank, " \u4F4D\u3067\u3059"));
+    showModal('記録を送信しました', "\u3042\u306A\u305F\u306E\u8A18\u9332\u306F ".concat(object.rankingRank, " \u4F4D\u3067\u3059"));
     sendRecordToRankingButtonArea.text('記録を送信しました');
   }, function (error) {
     outputArea.text('記録を送信できませんでした');
@@ -269,6 +355,14 @@ sendRecordToRankingButtonArea.on('click', function () {
 retryButtonArea.on('click', function () {
   typingTest.reset();
   console.log('reset');
+}); // コピー禁止
+
+jquery__WEBPACK_IMPORTED_MODULE_0___default()(document.body).on('copy', function (e) {
+  e.preventDefault();
+}); // ペースト禁止
+
+typingInputArea.on('paste', function (e) {
+  e.preventDefault();
 });
 
 /***/ }),

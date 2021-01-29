@@ -8,30 +8,14 @@ import Timer from './timer';
 import assert from './lib/assert';
 
 const messageArea = $('#message');
-const typingTextArea = $('#typingText');
+const curTypingTextArea = $('#curTypingText');
 const typingInputArea = $('#typingInput');
+const nextTypingTextArea = $('#nextTypingText');
 const resultArea = $('#result')
 const outputArea = $('#output');
 const resultButtonsArea = $('#resultButtons');
 const sendRecordToRankingButtonArea = $('#sendRecordToRanking');
 const retryButtonArea = $('#retryButton');
-
-// TODO: コメントアウト
-/*
-let typingTextList;
-$.get('/typing-test/api/get-text').then(
-  object => {
-    typingTextList = object.textList;
-  },
-  error => {
-    console.error('文章の取得に失敗しました');
-  }
-);
-*/
-const typingTextList = [
-  "これはテストです。",
-  "かな漢字変換込みのタイピングを練習できます。"
-];
 
 class TypingTest {
   /**
@@ -45,14 +29,37 @@ class TypingTest {
    */
   #timer;
   /**
-   * 現在入力している typingTextList の index
+   * 現在入力している this.#typingTextList の index
+   *
+   * 開始前は -1
    * @type {number}
    */
-  #curTypingTextIndex = 0;
+  #curTypingTextIndex = -1;
+  /**
+   * 入力する文字列のリスト
+   * @type {Array<string>}
+   */
+  #typingTextList;
 
   constructor() {
     const timerArea = $('#timer');
     this.#timer = new Timer(timerArea);
+    this.#typingTextList = [
+      "これはダミーの文字列です。",
+      // "かな漢字変換込みのタイピングを練習できます。",
+      // "これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。これは長い文章のテストです。"
+    ];
+    /*
+    $.get('/typing-test/api/get-text').then(
+      object => {
+        this.#typingTextList = object.textList;
+      },
+      error => {
+        console.error('文章の取得に失敗しました');
+      }
+    );
+    */
+    this.reset();
   }
 
   start() {
@@ -60,10 +67,12 @@ class TypingTest {
     this.#curTypingTextIndex = 0;
     this.#timer.start();
     messageArea.text('Esc でリセット');
-    typingTextArea.text(typingTextList[this.#curTypingTextIndex]);
+    curTypingTextArea.text(this.curTypingText);
     typingInputArea.val('');
     typingInputArea.trigger('focus');
+    nextTypingTextArea.text(this.displayNextTypingText);
     resultArea.text('');
+    resultArea.hide();
     outputArea.text('');
     sendRecordToRankingButtonArea.hide();
     sendRecordToRankingButtonArea.prop('disabled', false);
@@ -73,12 +82,14 @@ class TypingTest {
 
   reset() {
     this.#isInTest = false;
-    this.#curTypingTextIndex = 0;
+    this.#curTypingTextIndex = -1;
     this.#timer.reset();
     messageArea.text('Enter または Space を押してスタート');
-    typingTextArea.text('');
+    curTypingTextArea.text(this.curTypingText);
     typingInputArea.val('');
+    nextTypingTextArea.text(this.displayNextTypingText);
     resultArea.text('');
+    resultArea.hide();
     outputArea.text('');
     sendRecordToRankingButtonArea.hide();
     sendRecordToRankingButtonArea.prop('disabled', false);
@@ -90,14 +101,15 @@ class TypingTest {
    * @param {string} inputText 入力された文字列
    */
   input(inputText) {
-    if (inputText === typingTextList[this.#curTypingTextIndex]) {
+    if (inputText === this.#typingTextList[this.#curTypingTextIndex]) {
       typingInputArea.val('');
       ++this.#curTypingTextIndex;
-      if (this.#curTypingTextIndex === typingTextList.length) {
+      if (this.#curTypingTextIndex === this.#typingTextList.length) {
         this.finish();
         return;
       }
-      typingTextArea.text(typingTextList[this.#curTypingTextIndex]);
+      curTypingTextArea.text(this.curTypingText);
+      nextTypingTextArea.text(this.displayNextTypingText);
     }
   }
   /**
@@ -110,25 +122,25 @@ class TypingTest {
 
     const resultTimeMs = this.#timer.elapsedTimeMs;
 
-    const resultObject = {
-      "timeMs": resultTimeMs
-    };
-    $.post('/typing-test/api/record', resultObject, 'json').then(
+    // 結果を記録する
+    $.post('/typing-test/api/record', { 'timeMs': resultTimeMs }, 'json').then(
       object => {
         assert.defined(object.status, object.recordRank, object.canUpdateRanking);
-
-        const recordRank = object.recordRank;
+        const recordRank = parseInt(object.recordRank);
         const canUpdateRanking = object.canUpdateRanking;
 
+        // 結果の表示
         const displayTime = (resultTimeMs / 1000).toFixed(3);
         const displayMessage =
-          recordRank === 1 ?
-            `新記録達成！` :
-            `第${recordRank}位`;
-        resultArea.text(
-          `finished!\nTime: ${displayTime}\n${displayMessage}`
+          recordRank === 1
+            ? `新記録達成！`
+            : `第${recordRank}位`;
+        // ユーザーが弄れる文字列を入れない！
+        resultArea.html(
+          `Finished!<br>Time: ${displayTime}<br>${displayMessage}`
         );
 
+        resultArea.show();
         resultButtonsArea.show();
 
         if (canUpdateRanking) {
@@ -157,6 +169,43 @@ class TypingTest {
     if (this.#isInTest || this.#timer.elapsedTimeMs === 0) return -1;
     return this.#timer.elapsedTimeMs;
   }
+  /**
+   * 現在の文字列
+   *
+   * 現在の文字列が存在しない場合（開始前を含む）、空文字列を返す
+   * @type {string}
+   */
+  get curTypingText() {
+    const curIndex = this.#curTypingTextIndex;
+    const list = this.#typingTextList;
+    if (curIndex < 0 || curIndex >= list.length) return '';
+    else return list[curIndex];
+  }
+  /**
+   * 次の文字列
+   *
+   * 次の文字列が存在しない場合、空文字列を返す
+   * @type {string}
+   */
+  get nextTypingText() {
+    const nextIndex = this.#curTypingTextIndex + 1;
+    const list = this.#typingTextList;
+    if (nextIndex < 0 || nextIndex >= list.length) return '';
+    else return list[nextIndex];
+  }
+  /**
+   * 次の文字列の先頭 30 文字に 'NEXT: ' という prefix を付けたもの
+   *
+   * 次の文字列が 30 文字より長い場合、 '...' という suffix を付ける
+   * @type {string}
+   */
+  get displayNextTypingText() {
+    const text = this.nextTypingText;
+    const len = 30;
+    const textSubstr = text.substring(0, len);
+    const suffix = text.length <= len ? '' : '...';
+    return `NEXT: ${textSubstr}${suffix}`;
+  }
 }
 
 const typingTest = new TypingTest();
@@ -168,7 +217,7 @@ $(document.body).on('keydown', event => {
   if (!typingTest.isInTest && startKeyList.includes(event.key)) {
     typingTest.start();
   }
-  else if (typingTest.isInTest && resetKeyList.includes(event.key)) {
+  else if (resetKeyList.includes(event.key)) {
     // Vimmium を使っていると、typingInputArea にフォーカスがあるときに Esc が検出されない
     typingTest.reset();
   }
@@ -182,6 +231,21 @@ typingInputArea.on('keypress', event => {
   }
 });
 
+/**
+ * モーダルを出す
+ * @param {string} title モーダルのタイトル
+ * @param {string} body モーダルの本文
+ */
+function showModal(title, body) {
+  assert.defined(title, body);
+  const modalArea = $('#modal');
+  modalArea.modal('show');
+  const modalTitleArea = $('#modalTitle');
+  modalTitleArea.text(title);
+  const modalBodyArea = $('#modalBody');
+  modalBodyArea.text(body);
+}
+
 // 「ネットランキングに記録を送信」ボタン
 sendRecordToRankingButtonArea.on('click', () => {
   // ボタンを無効化
@@ -189,18 +253,16 @@ sendRecordToRankingButtonArea.on('click', () => {
 
   const resultTimeMs = typingTest.resultTimeMs;
   console.log(resultTimeMs);
-  if (resultTimeMs < 0) {
+  if (resultTimeMs <= 0) {
+    outputArea.text('記録を送信できませんでした');
     return;
   }
 
+  // 記録を送信する
   $.post('/typing-test/api/ranking', { 'timeMs' : resultTimeMs }, 'json').then(
     object => {
       assert.defined(object.status, object.rankingRank);
-      // TODO: モーダル周りを整備する
-      const modalArea = $('#modal');
-      modalArea.modal('show');
-      const resultModalBodyArea = $('#resultModalBody');
-      resultModalBodyArea.text(`あなたの記録は ${object.rankingRank} 位です`);
+      showModal('記録を送信しました', `あなたの記録は ${object.rankingRank} 位です`);
       sendRecordToRankingButtonArea.text('記録を送信しました');
     },
     error => {
@@ -214,3 +276,8 @@ retryButtonArea.on('click', () => {
   typingTest.reset();
   console.log('reset');
 });
+
+// コピー禁止
+$(document.body).on('copy', e => { e.preventDefault(); });
+// ペースト禁止
+typingInputArea.on('paste', e => { e.preventDefault(); });
