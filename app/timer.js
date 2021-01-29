@@ -73,7 +73,7 @@ export default class Timer {
    * 値は小数第1位まで表示する
    */
   drawTime() {
-    this.#timerArea.text(this.getDisplayTime());
+    this.#timerArea.text(this.displayTime);
   }
   /**
    * 現在の経過時間 (ms)
@@ -88,7 +88,7 @@ export default class Timer {
    * 値は小数第1位まで表示する
    * @return {string} 経過時間(s)
    */
-  getDisplayTime() {
+  get displayTime() {
     return (this.elapsedTimeMs / 1000).toFixed(1);
   }
 }
