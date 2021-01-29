@@ -35,10 +35,6 @@ router.get('/', authenticationEnsurer, asyncHandler(async (req, res, next) => {
     ranking.formattedUpdatedAt = moment(ranking.updatedAt).tz('Azia/Tokyo').format('YYYY/MM/DD');
   });
 
-  console.log(rankings);
-  console.log(req.user);
-  console.log(rankings[0].user.userId);
-
   res.render('ranking', {
     user: req.user,
     rankings: rankings

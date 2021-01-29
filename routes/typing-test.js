@@ -8,22 +8,24 @@ const fs = require('fs');
 const loader = require('../models/sequelize-loader');
 const Sequelize = loader.Sequelize;
 const asyncHandler = require('express-async-handler');
+const csrf = require('csurf');
+const csrfProtection = csrf({ cookie: true });
 
-router.get('/', authenticationEnsurer, (req, res, next) => {
-  res.render('typing-test', { user: req.user });
+router.get('/', authenticationEnsurer, csrfProtection, (req, res, next) => {
+  res.render('typing-test', { user: req.user, csrfToken: req.csrfToken() });
 });
 
 const kenpoText = fs.readFileSync('./dat/kenpo.txt', { encoding: 'utf-8', flag: 'r' });
 const kenpoTextList = kenpoText.trim().split('\n');
 // テキストを取得する API
-router.get('/api/get-text', authenticationEnsurer, (req, res, next) => {
+router.get('/api/get-text', authenticationEnsurer, csrfProtection, (req, res, next) => {
   res.json({
     textList: kenpoTextList
   });
 });
 
 // 記録を Record に追加する API
-router.post('/api/record', authenticationEnsurer, asyncHandler(async (req, res, next) => {
+router.post('/api/record', authenticationEnsurer, csrfProtection, asyncHandler(async (req, res, next) => {
   const timeMs = req.body.timeMs;
   const userId = req.user.id;
   await Record.create({
@@ -53,7 +55,6 @@ router.post('/api/record', authenticationEnsurer, asyncHandler(async (req, res, 
    * @type {Object|null}
    */
   const ranking = await Ranking.findByPk(userId, { raw: true, nest: true });
-  console.log(ranking);
 
   /**
    * ランキングが更新可能かどうか
@@ -71,7 +72,7 @@ router.post('/api/record', authenticationEnsurer, asyncHandler(async (req, res, 
 }));
 
 // 記録を Ranking に追加する API
-router.post('/api/ranking', authenticationEnsurer, asyncHandler(async (req, res, next) => {
+router.post('/api/ranking', authenticationEnsurer, csrfProtection, asyncHandler(async (req, res, next) => {
   // ランキングの upsert
   const timeMs = req.body.timeMs;
   const userId = req.user.id;

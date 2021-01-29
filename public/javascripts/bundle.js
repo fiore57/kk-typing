@@ -41,6 +41,7 @@ var outputArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#output');
 var resultButtonsArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#resultButtons');
 var sendRecordToRankingButtonArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#sendRecordToRanking');
 var retryButtonArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#retryButton');
+var csrfTokenArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#csrfToken');
 
 var _isInTest = new WeakMap();
 
@@ -115,6 +116,10 @@ var TypingTest = /*#__PURE__*/function () {
 
     this.reset();
   }
+  /**
+   * 開始処理
+   */
+
 
   _createClass(TypingTest, [{
     key: "start",
@@ -138,6 +143,10 @@ var TypingTest = /*#__PURE__*/function () {
       sendRecordToRankingButtonArea.text('ネットランキングに記録を送信');
       resultButtonsArea.hide();
     }
+    /**
+     * リセット処理
+     */
+
   }, {
     key: "reset",
     value: function reset() {
@@ -167,23 +176,28 @@ var TypingTest = /*#__PURE__*/function () {
   }, {
     key: "input",
     value: function input(inputText) {
-      if (inputText === _classPrivateFieldGet(this, _typingTextList)[_classPrivateFieldGet(this, _curTypingTextIndex)]) {
+      _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(inputText); // 入力された文字列と curTypingText の差分を表示
+
+      curTypingTextArea.html(this.getTextDiffStringIncludesSpanTag(inputText));
+
+      var isCorrectInput = inputText === _classPrivateFieldGet(this, _typingTextList)[_classPrivateFieldGet(this, _curTypingTextIndex)];
+
+      if (isCorrectInput) {
         // 入力文字列が正しい場合
         typingInputArea.val('');
 
         _classPrivateFieldSet(this, _curTypingTextIndex, +_classPrivateFieldGet(this, _curTypingTextIndex) + 1);
 
-        if (_classPrivateFieldGet(this, _curTypingTextIndex) === _classPrivateFieldGet(this, _typingTextList).length) {
+        var isFinished = _classPrivateFieldGet(this, _curTypingTextIndex) === _classPrivateFieldGet(this, _typingTextList).length;
+
+        if (isFinished) {
           this.finish();
           return;
-        }
+        } // テキストを更新
+
 
         curTypingTextArea.text(this.curTypingText);
         nextTypingTextArea.text(this.displayNextTypingText);
-      } else {
-        // 入力文字列に誤りがある場合
-        // WARNING: エスケープされていない文字列を入れないこと！！！
-        curTypingTextArea.html(this.getTextDiffStringIncludesSpanTag(inputText));
       }
     }
     /**
@@ -234,9 +248,11 @@ var TypingTest = /*#__PURE__*/function () {
       var resultTimeMs = _classPrivateFieldGet(this, _timer).elapsedTimeMs; // 結果を記録する
 
 
-      jquery__WEBPACK_IMPORTED_MODULE_0___default().post('/typing-test/api/record', {
-        'timeMs': resultTimeMs
-      }, 'json').then(function (object) {
+      var resultObject = {
+        'timeMs': resultTimeMs,
+        '_csrf': csrfTokenArea.val()
+      };
+      jquery__WEBPACK_IMPORTED_MODULE_0___default().post('/typing-test/api/record', resultObject, 'json').then(function (object) {
         _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(object.status, object.recordRank, object.canUpdateRanking);
         var recordRank = parseInt(object.recordRank);
         var canUpdateRanking = object.canUpdateRanking; // 結果の表示
@@ -381,7 +397,6 @@ sendRecordToRankingButtonArea.on('click', function () {
   // ボタンを無効化
   sendRecordToRankingButtonArea.prop('disabled', true);
   var resultTimeMs = typingTest.resultTimeMs;
-  console.log(resultTimeMs);
 
   if (resultTimeMs <= 0) {
     outputArea.text('記録を送信できませんでした');
@@ -389,9 +404,11 @@ sendRecordToRankingButtonArea.on('click', function () {
   } // 記録を送信する
 
 
-  jquery__WEBPACK_IMPORTED_MODULE_0___default().post('/typing-test/api/ranking', {
-    'timeMs': resultTimeMs
-  }, 'json').then(function (object) {
+  var resultObject = {
+    'timeMs': resultTimeMs,
+    '_csrf': csrfTokenArea.val()
+  };
+  jquery__WEBPACK_IMPORTED_MODULE_0___default().post('/typing-test/api/ranking', resultObject, 'json').then(function (object) {
     _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(object.status, object.rankingRank);
     showModal('記録を送信しました', "\u3042\u306A\u305F\u306E\u8A18\u9332\u306F ".concat(object.rankingRank, " \u4F4D\u3067\u3059"));
     sendRecordToRankingButtonArea.text('記録を送信しました');
@@ -402,7 +419,6 @@ sendRecordToRankingButtonArea.on('click', function () {
 
 retryButtonArea.on('click', function () {
   typingTest.reset();
-  console.log('reset');
 }); // コピー禁止
 
 jquery__WEBPACK_IMPORTED_MODULE_0___default()(document.body).on('copy', function (e) {

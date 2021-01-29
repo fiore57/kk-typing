@@ -18,6 +18,7 @@ const outputArea = $('#output');
 const resultButtonsArea = $('#resultButtons');
 const sendRecordToRankingButtonArea = $('#sendRecordToRanking');
 const retryButtonArea = $('#retryButton');
+const csrfTokenArea = $('#csrfToken');
 
 class TypingTest {
   /**
@@ -63,7 +64,9 @@ class TypingTest {
     */
     this.reset();
   }
-
+  /**
+   * 開始処理
+   */
   start() {
     this.#isInTest = true;
     this.#curTypingTextIndex = 0;
@@ -81,7 +84,9 @@ class TypingTest {
     sendRecordToRankingButtonArea.text('ネットランキングに記録を送信');
     resultButtonsArea.hide();
   }
-
+  /**
+   * リセット処理
+   */
   reset() {
     this.#isInTest = false;
     this.#curTypingTextIndex = -1;
@@ -103,21 +108,24 @@ class TypingTest {
    * @param {string} inputText 入力された文字列
    */
   input(inputText) {
-    if (inputText === this.#typingTextList[this.#curTypingTextIndex]) {
+    assert.defined(inputText);
+
+    // 入力された文字列と curTypingText の差分を表示
+    curTypingTextArea.html(this.getTextDiffStringIncludesSpanTag(inputText));
+
+    const isCorrectInput = (inputText === this.#typingTextList[this.#curTypingTextIndex]);
+    if (isCorrectInput) {
       // 入力文字列が正しい場合
       typingInputArea.val('');
       ++this.#curTypingTextIndex;
-      if (this.#curTypingTextIndex === this.#typingTextList.length) {
+      const isFinished = (this.#curTypingTextIndex === this.#typingTextList.length);
+      if (isFinished) {
         this.finish();
         return;
       }
+      // テキストを更新
       curTypingTextArea.text(this.curTypingText);
       nextTypingTextArea.text(this.displayNextTypingText);
-    }
-    else {
-      // 入力文字列に誤りがある場合
-      // WARNING: エスケープされていない文字列を入れないこと！！！
-      curTypingTextArea.html(this.getTextDiffStringIncludesSpanTag(inputText));
     }
   }
   /**
@@ -160,7 +168,11 @@ class TypingTest {
     const resultTimeMs = this.#timer.elapsedTimeMs;
 
     // 結果を記録する
-    $.post('/typing-test/api/record', { 'timeMs': resultTimeMs }, 'json').then(
+    const resultObject = {
+      'timeMs': resultTimeMs,
+      '_csrf': csrfTokenArea.val()
+    };
+    $.post('/typing-test/api/record', resultObject, 'json').then(
       object => {
         assert.defined(object.status, object.recordRank, object.canUpdateRanking);
         const recordRank = parseInt(object.recordRank);
@@ -297,14 +309,17 @@ sendRecordToRankingButtonArea.on('click', () => {
   sendRecordToRankingButtonArea.prop('disabled', true);
 
   const resultTimeMs = typingTest.resultTimeMs;
-  console.log(resultTimeMs);
   if (resultTimeMs <= 0) {
     outputArea.text('記録を送信できませんでした');
     return;
   }
 
   // 記録を送信する
-  $.post('/typing-test/api/ranking', { 'timeMs' : resultTimeMs }, 'json').then(
+  const resultObject = {
+    'timeMs': resultTimeMs,
+    '_csrf': csrfTokenArea.val()
+  };
+  $.post('/typing-test/api/ranking', resultObject, 'json').then(
     object => {
       assert.defined(object.status, object.rankingRank);
       showModal('記録を送信しました', `あなたの記録は ${object.rankingRank} 位です`);
@@ -319,7 +334,6 @@ sendRecordToRankingButtonArea.on('click', () => {
 // 「リトライ」ボタン
 retryButtonArea.on('click', () => {
   typingTest.reset();
-  console.log('reset');
 });
 
 // コピー禁止
