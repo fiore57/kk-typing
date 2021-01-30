@@ -244,32 +244,72 @@ $.get('/typing-test/api/get-text').then(
   object => {
     const typingTextList = object.textList;
     typingTest = new TypingTest(typingTextList);
+    initialize();
   },
   error => {
     console.error('文章の取得に失敗しました');
   }
 );
 
-// タイピングテストの開始・リセット用
-$(document.body).on('keydown', event => {
-  const startKeyList = ['Enter', ' '];
-  const resetKeyList = ['Escape'];
-  if (!typingTest.isInTest && startKeyList.includes(event.key)) {
-    typingTest.start();
-  }
-  else if (resetKeyList.includes(event.key)) {
-    // Vimmium を使っていると、typingInputArea にフォーカスがあるときに Esc が検出されない
-    typingTest.reset();
-  }
-});
+/**
+ * typingTextList の取得が終わってから実行する処理
+ */
+function initialize() {
+  // タイピングテストの開始・リセット用
+  $(document.body).on('keydown', event => {
+    const startKeyList = ['Enter', ' '];
+    const resetKeyList = ['Escape'];
+    if (!typingTest.isInTest && startKeyList.includes(event.key)) {
+      typingTest.start();
+    }
+    else if (resetKeyList.includes(event.key)) {
+      // Vimmium を使っていると、typingInputArea にフォーカスがあるときに Esc が検出されない
+      typingTest.reset();
+    }
+  });
 
-// タイピングテスト中、入力した文字列の確定用
-typingInputArea.on('change', event => {
-  if (typingTest.isInTest) {
-    const inputText = typingInputArea.val();
-    typingTest.input(inputText);
-  }
-});
+  // タイピングテスト中、入力した文字列の確定用
+  typingInputArea.on('change', event => {
+    if (typingTest.isInTest) {
+      const inputText = typingInputArea.val();
+      typingTest.input(inputText);
+    }
+  });
+
+  // 「ネットランキングに記録を送信」ボタン
+  sendRecordToRankingButtonArea.on('click', () => {
+    // ボタンを無効化
+    sendRecordToRankingButtonArea.prop('disabled', true);
+
+    const resultTimeMs = typingTest.resultTimeMs;
+    if (resultTimeMs <= 0) {
+      outputArea.text('記録を送信できませんでした');
+      return;
+    }
+
+    // 記録を送信する
+    const resultObject = {
+      'timeMs': resultTimeMs,
+      '_csrf': csrfTokenArea.val()
+    };
+    $.post('/typing-test/api/ranking', resultObject, 'json').then(
+      object => {
+        assert.defined(object.status, object.rankingRank);
+        showModal('記録を送信しました', `あなたの記録は ${object.rankingRank} 位です`);
+        sendRecordToRankingButtonArea.text('記録を送信しました');
+      },
+      error => {
+        outputArea.text('記録を送信できませんでした');
+      }
+    );
+  });
+
+  // 「リトライ」ボタン
+  retryButtonArea.on('click', () => {
+    typingTest.reset();
+  });
+
+}
 
 /**
  * モーダルを出す
@@ -285,39 +325,6 @@ function showModal(title, body) {
   const modalBodyArea = $('#modalBody');
   modalBodyArea.text(body);
 }
-
-// 「ネットランキングに記録を送信」ボタン
-sendRecordToRankingButtonArea.on('click', () => {
-  // ボタンを無効化
-  sendRecordToRankingButtonArea.prop('disabled', true);
-
-  const resultTimeMs = typingTest.resultTimeMs;
-  if (resultTimeMs <= 0) {
-    outputArea.text('記録を送信できませんでした');
-    return;
-  }
-
-  // 記録を送信する
-  const resultObject = {
-    'timeMs': resultTimeMs,
-    '_csrf': csrfTokenArea.val()
-  };
-  $.post('/typing-test/api/ranking', resultObject, 'json').then(
-    object => {
-      assert.defined(object.status, object.rankingRank);
-      showModal('記録を送信しました', `あなたの記録は ${object.rankingRank} 位です`);
-      sendRecordToRankingButtonArea.text('記録を送信しました');
-    },
-    error => {
-      outputArea.text('記録を送信できませんでした');
-    }
-  );
-});
-
-// 「リトライ」ボタン
-retryButtonArea.on('click', () => {
-  typingTest.reset();
-});
 
 // コピー禁止
 $(document.body).on('copy', e => { e.preventDefault(); });
