@@ -23,24 +23,24 @@
 
 ## Project setup
 
-```console
+```sh
 yarn install
 ```
 
 ### Build
 
-```console
+```sh
 yarn build
 ```
 
 ### Start server
 
-```console
+```sh
 PORT=8000 yarn start
 ```
 
 ### Run tests
 
-```console
+```sh
 yarn test
 ```
