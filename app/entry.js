@@ -247,7 +247,7 @@ $.get('/typing-test/api/get-text').then(
     initialize();
   },
   error => {
-    console.error('文章の取得に失敗しました');
+    outputArea.text('文章の取得に失敗しました');
   }
 );
 
