@@ -9,6 +9,7 @@ const loader = require('../models/sequelize-loader');
 const Sequelize = loader.Sequelize;
 const asyncHandler = require('express-async-handler');
 
+// get ranking page
 router.get('/', authenticationEnsurer, asyncHandler(async (req, res, next) => {
   // ランキングを順位と共に取得
   // SELECT RANK() OVER (ORDER BY time ASC) AS rank, * FROM rankings ORDER BY time ASC, "updatedAt" ASC; みたいな感じ

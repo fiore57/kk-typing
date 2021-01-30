@@ -11,6 +11,7 @@ const asyncHandler = require('express-async-handler');
 const csrf = require('csurf');
 const csrfProtection = csrf({ cookie: true });
 
+// get typing-test page
 router.get('/', authenticationEnsurer, csrfProtection, (req, res, next) => {
   res.render('typing-test', { user: req.user, csrfToken: req.csrfToken() });
 });

@@ -1,5 +1,8 @@
 'use strict';
 
+/**
+ * 認証されていなければ、/login にリダイレクトする
+ */
 function ensure(req, res, next) {
   if (req.isAuthenticated()) {
     return next();

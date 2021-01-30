@@ -6,6 +6,7 @@ const Record = require('../models/record');
 const moment = require('moment-timezone');
 const asyncHandler = require('express-async-handler');
 
+// get record page
 router.get('/', authenticationEnsurer, asyncHandler(async (req, res, next) => {
   // 自分の記録上位100個を取得
   const records = await Record.findAll({

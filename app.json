@@ -1,0 +1,7 @@
+{
+    "name": "kk-typing",
+    "description": "かな漢字タイピング",
+    "logo": "",
+    "keywords": ["node"],
+    "image": "heroku/nodejs"
+}

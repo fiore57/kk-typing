@@ -1,7 +1,10 @@
 'use strict';
 const Sequelize = require('sequelize');
 const sequelize = new Sequelize(
-  'postgres://postgres:postgres@localhost/kk_typing'
+  process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost/kk_typing',
+  {
+    logging: false // ログを出力しない
+  }
 );
 
 module.exports = {

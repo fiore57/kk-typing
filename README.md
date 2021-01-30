@@ -27,8 +27,20 @@
 yarn install
 ```
 
-### Build and Run for development
+### Build
+
+```console
+yarn build
+```
+
+### Start server
 
 ```console
 PORT=8000 yarn start
+```
+
+### Run tests
+
+```console
+yarn test
 ```
