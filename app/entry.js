@@ -71,7 +71,7 @@ class TypingTest {
     this.#isInTest = false;
     this.#curTypingTextIndex = -1;
     this.#timer.reset();
-    messageArea.text('Enter または Space を押してスタート');
+    messageArea.text('Enter を押してスタート');
     curTypingTextArea.text(this.curTypingText);
     typingInputArea.val('');
     nextTypingTextArea.text(this.displayNextTypingText);
@@ -257,7 +257,7 @@ $.get('/typing-test/api/get-text').then(
 function initialize() {
   // タイピングテストの開始・リセット用
   $(document.body).on('keydown', event => {
-    const startKeyList = ['Enter', ' '];
+    const startKeyList = ['Enter'];
     const resetKeyList = ['Escape'];
     if (!typingTest.isInTest && startKeyList.includes(event.key)) {
       typingTest.start();
