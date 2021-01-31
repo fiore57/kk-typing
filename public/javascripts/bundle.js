@@ -169,6 +169,7 @@ var TypingTest = /*#__PURE__*/function () {
     key: "input",
     value: function input(inputText) {
       _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(inputText); // 入力された文字列と curTypingText の差分を表示
+      // WARNING: エスケープされていない文字列を入れないこと！！！
 
       curTypingTextArea.html(this.getTextDiffStringIncludesSpanTag(inputText));
       var isCorrectInput = inputText === this.curTypingText;
@@ -228,6 +229,8 @@ var TypingTest = /*#__PURE__*/function () {
   }, {
     key: "finish",
     value: function finish() {
+      var _this = this;
+
       _classPrivateFieldSet(this, _isInTest, false);
 
       _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(_classPrivateFieldGet(this, _timer));
@@ -254,10 +257,41 @@ var TypingTest = /*#__PURE__*/function () {
         var recordRank = parseInt(object.recordRank);
         var canUpdateRanking = object.canUpdateRanking; // 結果の表示
 
-        var displayTime = (resultTimeMs / 1000).toFixed(3);
-        var displayMessage = recordRank === 1 ? "\u65B0\u8A18\u9332\u9054\u6210\uFF01" : "\u7B2C".concat(recordRank, "\u4F4D"); // WARNING: エスケープされていない文字列を入れないこと！！！
+        /**
+         * 表示するタイム (s)
+         *
+         * 小数第3位まで
+         * @type {string}
+         */
 
-        resultBodyArea.html("Time: ".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayTime), "<br>").concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayMessage)));
+        var displayTime = (resultTimeMs / 1000).toFixed(3);
+        /**
+         * typingText の文字数
+         * @type {number}
+         */
+
+        var charCount = _classPrivateFieldGet(_this, _typingTextList).reduce(function (acc, cur) {
+          return acc + cur.length;
+        }, 0);
+        /**
+         * 表示する「文字/秒」
+         *
+         * 小数第2位まで
+         * @type {string}
+         */
+
+
+        var displayCharPerSecond = (charCount / (resultTimeMs / 1000)).toFixed(2);
+        /**
+         * 表示するメッセージ
+         * @type {string}
+         */
+
+        var displayMessage = recordRank === 1 ? "\u65B0\u8A18\u9332\u9054\u6210\uFF01" : "\u7B2C".concat(recordRank, "\u4F4D");
+        console.log(_classPrivateFieldGet(_this, _typingTextList));
+        console.log(charCount); // WARNING: エスケープされていない文字列を入れないこと！！！
+
+        resultBodyArea.html("Time: ".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayTime), "<br>") + "".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayCharPerSecond), " \u6587\u5B57/\u79D2<br>") + "".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayMessage)));
         resultArea.show();
         resultButtonsArea.show();
 
@@ -347,8 +381,9 @@ var TypingTest = /*#__PURE__*/function () {
 var typingTest; // typingTextList を取得
 
 jquery__WEBPACK_IMPORTED_MODULE_0___default().get('/typing-test/api/get-text').then(function (object) {
-  _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(object.textList);
-  var typingTextList = object.textList;
+  _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(object.textList); // const typingTextList = object.textList;
+
+  var typingTextList = ["これはテストです", "これはテストです"];
   typingTest = new TypingTest(typingTextList);
   initialize();
 }, function (error) {

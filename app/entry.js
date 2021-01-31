@@ -101,6 +101,7 @@ class TypingTest {
     assert.defined(inputText);
 
     // 入力された文字列と curTypingText の差分を表示
+    // WARNING: エスケープされていない文字列を入れないこと！！！
     curTypingTextArea.html(this.getTextDiffStringIncludesSpanTag(inputText));
 
     const isCorrectInput = (inputText === this.curTypingText);
@@ -175,14 +176,40 @@ class TypingTest {
         const canUpdateRanking = object.canUpdateRanking;
 
         // 結果の表示
+        /**
+         * 表示するタイム (s)
+         *
+         * 小数第3位まで
+         * @type {string}
+         */
         const displayTime = (resultTimeMs / 1000).toFixed(3);
+        /**
+         * typingText の文字数
+         * @type {number}
+         */
+        const charCount = this.#typingTextList.reduce(((acc, cur) => acc + cur.length), 0);
+        /**
+         * 表示する「文字/秒」
+         *
+         * 小数第2位まで
+         * @type {string}
+         */
+        const displayCharPerSecond = (charCount / (resultTimeMs / 1000)).toFixed(2);
+        /**
+         * 表示するメッセージ
+         * @type {string}
+         */
         const displayMessage =
           recordRank === 1
             ? `新記録達成！`
             : `第${recordRank}位`;
+        console.log(this.#typingTextList);
+        console.log(charCount);
         // WARNING: エスケープされていない文字列を入れないこと！！！
         resultBodyArea.html(
-          `Time: ${utils.escapeText(displayTime)}<br>${utils.escapeText(displayMessage)}`
+          `Time: ${utils.escapeText(displayTime)}<br>` +
+          `${utils.escapeText(displayCharPerSecond)} 文字/秒<br>` +
+          `${ utils.escapeText(displayMessage) }`
         );
 
         resultArea.show();
