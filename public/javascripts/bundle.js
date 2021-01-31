@@ -287,11 +287,11 @@ var TypingTest = /*#__PURE__*/function () {
          * @type {string}
          */
 
-        var displayMessage = recordRank === 1 ? "\u65B0\u8A18\u9332\u9054\u6210\uFF01" : "\u7B2C".concat(recordRank, "\u4F4D");
+        var displayMessage = recordRank === 1 ? "\u65B0\u8A18\u9332\u9054\u6210\uFF01" : "\u7B2C ".concat(recordRank, " \u4F4D");
         console.log(_classPrivateFieldGet(_this, _typingTextList));
         console.log(charCount); // WARNING: エスケープされていない文字列を入れないこと！！！
 
-        resultBodyArea.html("Time: ".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayTime), "<br>") + "".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayCharPerSecond), " \u6587\u5B57/\u79D2<br>") + "".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayMessage)));
+        resultBodyArea.html("Time: ".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayTime), " \u79D2<br>") + "".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayCharPerSecond), " \u6587\u5B57/\u79D2<br>") + "".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayMessage)));
         resultArea.show();
         resultButtonsArea.show();
 

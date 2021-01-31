@@ -202,12 +202,12 @@ class TypingTest {
         const displayMessage =
           recordRank === 1
             ? `新記録達成！`
-            : `第${recordRank}位`;
+            : `第 ${recordRank} 位`;
         console.log(this.#typingTextList);
         console.log(charCount);
         // WARNING: エスケープされていない文字列を入れないこと！！！
         resultBodyArea.html(
-          `Time: ${utils.escapeText(displayTime)}<br>` +
+          `Time: ${utils.escapeText(displayTime)} 秒<br>` +
           `${utils.escapeText(displayCharPerSecond)} 文字/秒<br>` +
           `${ utils.escapeText(displayMessage) }`
         );
