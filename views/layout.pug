@@ -9,12 +9,20 @@ html
     integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm",
     crossorigin="anonymous")
   body
-    nav.navbar.navbar-light.bg-light
+    nav.navbar.navbar-expand-lg.navbar-light.bg-light
       div.navbar-header
         a(href="/").navbar-brand.nav-link かな漢字タイピング
-      ul.navbar-nav
-        if user
+      if user
+        ul.navbar-nav
           li.nav-item
+            a(href="/typing-test").nav-link Typing Test
+          li.nav-item
+            a(href="/record").nav-link TOP100 Records
+          li.nav-item
+            a(href="/ranking").nav-link Ranking
+      ul.navbar-nav.ml-auto
+        if user
+          li.nav-item.ml-auto
             a(href="/logout").nav-link #{user.username} をログアウト
         else
           li.nav-item
