@@ -381,9 +381,8 @@ var TypingTest = /*#__PURE__*/function () {
 var typingTest; // typingTextList を取得
 
 jquery__WEBPACK_IMPORTED_MODULE_0___default().get('/typing-test/api/get-text').then(function (object) {
-  _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(object.textList); // const typingTextList = object.textList;
-
-  var typingTextList = ["これはテストです", "これはテストです"];
+  _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(object.textList);
+  var typingTextList = object.textList;
   typingTest = new TypingTest(typingTextList);
   initialize();
 }, function (error) {

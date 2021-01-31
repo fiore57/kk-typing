@@ -25,19 +25,19 @@ describe('/ ログイン時', () => {
   test('「タイピングテストをプレイ」ボタンが表示される', () => {
     return request(app)
       .get('/')
-      .expect(/<a class="btn btn-primary mx-2" href="\/typing-test"/)
+      .expect(/<a class="btn btn-primary mx-2 my-1" href="\/typing-test"/)
       .expect(200);
   });
   test('「自分の記録を見る」ボタンが表示される', () => {
     return request(app)
       .get('/')
-      .expect(/<a class="btn btn-info mx-2" href="\/record"/)
+      .expect(/<a class="btn btn-info mx-2 my-1" href="\/record"/)
       .expect(200);
   });
   test('「ネットランキングを見る」ボタンが表示される', () => {
     return request(app)
       .get('/')
-      .expect(/<a class="btn btn-info mx-2" href="\/ranking"/)
+      .expect(/<a class="btn btn-info mx-2 my-1" href="\/ranking"/)
       .expect(200);
   });
   test('ユーザー名が表示される', () => {
