@@ -63,6 +63,16 @@ class TypingTest {
     curTypingTextArea.text(this.curTypingText);
     nextTypingTextArea.text(this.displayNextTypingText);
     typingInputArea.trigger('focus');
+    // /typing-test/api/start に POST
+    $.post('/typing-test/api/start', { '_csrf': csrfTokenArea.val() }, 'json').then(
+      object => {
+        assert.defined(object.status);
+        assert.eq(object.status, 'OK');
+      },
+      error => {
+        outputCannotStartTypingTest();
+      }
+    );
   }
   /**
    * リセット処理
@@ -154,7 +164,13 @@ class TypingTest {
     };
     $.post('/typing-test/api/record', resultObject, 'json').then(
       object => {
-        assert.defined(object.status, object.recordRank, object.canUpdateRanking);
+        assert.defined(object.status);
+        if (object.status === 'NG') {
+          outputCannotSaveResultError();
+          return;
+        }
+        assert.eq(object.status, 'OK');
+        assert.defined(object.recordRank, object.canUpdateRanking);
         const recordRank = parseInt(object.recordRank);
         const canUpdateRanking = object.canUpdateRanking;
 
@@ -177,7 +193,7 @@ class TypingTest {
         }
       },
       error => {
-        outputArea.text('記録の保存に失敗しました');
+        outputCannotSaveResultError();
       }
     );
   }
@@ -242,6 +258,7 @@ let typingTest;
 // typingTextList を取得
 $.get('/typing-test/api/get-text').then(
   object => {
+    assert.defined(object.textList);
     const typingTextList = object.textList;
     typingTest = new TypingTest(typingTextList);
     initialize();
@@ -283,7 +300,7 @@ function initialize() {
 
     const resultTimeMs = typingTest.resultTimeMs;
     if (resultTimeMs <= 0) {
-      outputArea.text('記録を送信できませんでした');
+      outputCannotSendRecordError();
       return;
     }
 
@@ -294,12 +311,18 @@ function initialize() {
     };
     $.post('/typing-test/api/ranking', resultObject, 'json').then(
       object => {
-        assert.defined(object.status, object.rankingRank);
+        assert.defined(object.status);
+        if (object.status === 'NG') {
+          outputCannotSendRecordError();
+          return;
+        }
+        assert.eq(object.status, 'OK');
+        assert.defined(object.rankingRank);
         showModal('記録を送信しました', `あなたの記録は ${object.rankingRank} 位です`);
         sendRecordToRankingButtonArea.text('記録を送信しました');
       },
       error => {
-        outputArea.text('記録を送信できませんでした');
+        outputCannotSendRecordError();
       }
     );
   });
@@ -324,6 +347,25 @@ function showModal(title, body) {
   modalTitleArea.text(title);
   const modalBodyArea = $('#modalBody');
   modalBodyArea.text(body);
+}
+
+/**
+ * 計測を開始できなかった旨のエラーを出力
+ */
+function outputCannotStartTypingTest() {
+  outputArea.text('計測を開始できませんでした。F5 キーを押してページをリロードしてください。');
+}
+/**
+ * 記録を保存できなかった旨のエラーを出力
+ */
+function outputCannotSaveResultError() {
+  outputArea.text('記録の保存に失敗しました。F5 キーを押してページをリロードしてください。');
+}
+/**
+ * 記録をネットランキングに送信できなかった旨のエラーを出力
+ */
+function outputCannotSendRecordError() {
+  outputArea.text('記録をネットランキングに送信できませんでした。F5 キーを押してページをリロードしてください。');
 }
 
 // コピー禁止

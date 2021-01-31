@@ -25,10 +25,49 @@ router.get('/api/get-text', authenticationEnsurer, csrfProtection, (req, res, ne
   });
 });
 
+/**
+ * 各ユーザーが計測を開始した時間の連想配列
+ * @type {Map<number, number>}
+ */
+const startTimeMap = new Map();
+
+// 計測を開始するときに呼び出す API
+// /api/record に送信されるタイムが不正でないかを確かめるため（気休め程度）
+router.post('/api/start', authenticationEnsurer, csrfProtection, asyncHandler(async (req, res, next) => {
+  const userId = req.user.id;
+  startTimeMap.set(userId, Date.now());
+  res.json({
+    status: 'OK'
+  });
+}));
+
 // 記録を Record に追加する API
 router.post('/api/record', authenticationEnsurer, csrfProtection, asyncHandler(async (req, res, next) => {
   const timeMs = req.body.timeMs;
   const userId = req.user.id;
+
+  // startTime が登録されていない場合、不正と判断する
+  if (!startTimeMap.has(userId)) {
+    res.json({
+      status: 'NG'
+    });
+    return;
+  }
+  /**
+   * /api/start にリクエストがあった時間と /api/record に
+   * リクエストがあった時間から推定したタイム
+   * @type {number}
+   */
+  const estimatedTimeMs = Date.now() - startTimeMap.get(userId);
+  // 送信されたタイムと推定タイムの差が 5 秒より大きい場合、不正と判断する
+  if (Math.abs(estimatedTimeMs - timeMs) > 5000) {
+    res.json({
+      status: 'NG'
+    });
+    return;
+  }
+  startTimeMap.delete(userId);
+
   await Record.create({
     time: timeMs,
     createdBy: userId,
@@ -74,9 +113,32 @@ router.post('/api/record', authenticationEnsurer, csrfProtection, asyncHandler(a
 
 // 記録を Ranking に追加する API
 router.post('/api/ranking', authenticationEnsurer, csrfProtection, asyncHandler(async (req, res, next) => {
-  // ランキングの upsert
   const timeMs = req.body.timeMs;
   const userId = req.user.id;
+
+  /**
+   * Record に登録されている記録のうち、タイムが一致する記録
+   *
+   * 存在しない場合、null
+   * @type {Object|null}
+   */
+  const record = await Record.findOne({
+    where: {
+      createdBy: userId,
+      time: timeMs
+    },
+    raw: true,
+    nest: true
+  });
+  // Record にそのタイムが登録されていない場合、不正と判断する
+  if(!record) {
+    res.json({
+      status: 'NG'
+    });
+    return;
+  }
+
+  // ランキングの upsert
   await Ranking.upsert({
     time: timeMs,
     createdBy: userId,

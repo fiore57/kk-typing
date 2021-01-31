@@ -124,7 +124,16 @@ var TypingTest = /*#__PURE__*/function () {
       messageArea.text('Esc でリセット');
       curTypingTextArea.text(this.curTypingText);
       nextTypingTextArea.text(this.displayNextTypingText);
-      typingInputArea.trigger('focus');
+      typingInputArea.trigger('focus'); // /typing-test/api/start に POST
+
+      jquery__WEBPACK_IMPORTED_MODULE_0___default().post('/typing-test/api/start', {
+        '_csrf': csrfTokenArea.val()
+      }, 'json').then(function (object) {
+        _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(object.status);
+        _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.eq(object.status, 'OK');
+      }, function (error) {
+        outputCannotStartTypingTest();
+      });
     }
     /**
      * リセット処理
@@ -139,7 +148,7 @@ var TypingTest = /*#__PURE__*/function () {
 
       _classPrivateFieldGet(this, _timer).reset();
 
-      messageArea.text('Enter または Space を押してスタート');
+      messageArea.text('Enter を押してスタート');
       curTypingTextArea.text(this.curTypingText);
       typingInputArea.val('');
       nextTypingTextArea.text(this.displayNextTypingText);
@@ -233,7 +242,15 @@ var TypingTest = /*#__PURE__*/function () {
         '_csrf': csrfTokenArea.val()
       };
       jquery__WEBPACK_IMPORTED_MODULE_0___default().post('/typing-test/api/record', resultObject, 'json').then(function (object) {
-        _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(object.status, object.recordRank, object.canUpdateRanking);
+        _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(object.status);
+
+        if (object.status === 'NG') {
+          outputCannotSaveResultError();
+          return;
+        }
+
+        _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.eq(object.status, 'OK');
+        _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(object.recordRank, object.canUpdateRanking);
         var recordRank = parseInt(object.recordRank);
         var canUpdateRanking = object.canUpdateRanking; // 結果の表示
 
@@ -248,7 +265,7 @@ var TypingTest = /*#__PURE__*/function () {
           sendRecordToRankingButtonArea.show();
         }
       }, function (error) {
-        outputArea.text('記録の保存に失敗しました');
+        outputCannotSaveResultError();
       });
     }
     /**
@@ -330,35 +347,80 @@ var TypingTest = /*#__PURE__*/function () {
 var typingTest; // typingTextList を取得
 
 jquery__WEBPACK_IMPORTED_MODULE_0___default().get('/typing-test/api/get-text').then(function (object) {
+  _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(object.textList);
   var typingTextList = object.textList;
   typingTest = new TypingTest(typingTextList);
+  initialize();
 }, function (error) {
-  console.error('文章の取得に失敗しました');
-}); // タイピングテストの開始・リセット用
-
-jquery__WEBPACK_IMPORTED_MODULE_0___default()(document.body).on('keydown', function (event) {
-  var startKeyList = ['Enter', ' '];
-  var resetKeyList = ['Escape'];
-
-  if (!typingTest.isInTest && startKeyList.includes(event.key)) {
-    typingTest.start();
-  } else if (resetKeyList.includes(event.key)) {
-    // Vimmium を使っていると、typingInputArea にフォーカスがあるときに Esc が検出されない
-    typingTest.reset();
-  }
-}); // タイピングテスト中、入力した文字列の確定用
-
-typingInputArea.on('change', function (event) {
-  if (typingTest.isInTest) {
-    var inputText = typingInputArea.val();
-    typingTest.input(inputText);
-  }
+  outputArea.text('文章の取得に失敗しました');
 });
+/**
+ * typingTextList の取得が終わってから実行する処理
+ */
+
+function initialize() {
+  // タイピングテストの開始・リセット用
+  jquery__WEBPACK_IMPORTED_MODULE_0___default()(document.body).on('keydown', function (event) {
+    var startKeyList = ['Enter'];
+    var resetKeyList = ['Escape'];
+
+    if (!typingTest.isInTest && startKeyList.includes(event.key)) {
+      typingTest.start();
+    } else if (resetKeyList.includes(event.key)) {
+      // Vimmium を使っていると、typingInputArea にフォーカスがあるときに Esc が検出されない
+      typingTest.reset();
+    }
+  }); // タイピングテスト中、入力した文字列の確定用
+
+  typingInputArea.on('change', function (event) {
+    if (typingTest.isInTest) {
+      var inputText = typingInputArea.val();
+      typingTest.input(inputText);
+    }
+  }); // 「ネットランキングに記録を送信」ボタン
+
+  sendRecordToRankingButtonArea.on('click', function () {
+    // ボタンを無効化
+    sendRecordToRankingButtonArea.prop('disabled', true);
+    var resultTimeMs = typingTest.resultTimeMs;
+
+    if (resultTimeMs <= 0) {
+      outputCannotSendRecordError();
+      return;
+    } // 記録を送信する
+
+
+    var resultObject = {
+      'timeMs': resultTimeMs,
+      '_csrf': csrfTokenArea.val()
+    };
+    jquery__WEBPACK_IMPORTED_MODULE_0___default().post('/typing-test/api/ranking', resultObject, 'json').then(function (object) {
+      _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(object.status);
+
+      if (object.status === 'NG') {
+        outputCannotSendRecordError();
+        return;
+      }
+
+      _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.eq(object.status, 'OK');
+      _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(object.rankingRank);
+      showModal('記録を送信しました', "\u3042\u306A\u305F\u306E\u8A18\u9332\u306F ".concat(object.rankingRank, " \u4F4D\u3067\u3059"));
+      sendRecordToRankingButtonArea.text('記録を送信しました');
+    }, function (error) {
+      outputCannotSendRecordError();
+    });
+  }); // 「リトライ」ボタン
+
+  retryButtonArea.on('click', function () {
+    typingTest.reset();
+  });
+}
 /**
  * モーダルを出す
  * @param {string} title モーダルのタイトル
  * @param {string} body モーダルの本文
  */
+
 
 function showModal(title, body) {
   _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(title, body);
@@ -368,36 +430,32 @@ function showModal(title, body) {
   modalTitleArea.text(title);
   var modalBodyArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#modalBody');
   modalBodyArea.text(body);
-} // 「ネットランキングに記録を送信」ボタン
+}
+/**
+ * 計測を開始できなかった旨のエラーを出力
+ */
 
 
-sendRecordToRankingButtonArea.on('click', function () {
-  // ボタンを無効化
-  sendRecordToRankingButtonArea.prop('disabled', true);
-  var resultTimeMs = typingTest.resultTimeMs;
-
-  if (resultTimeMs <= 0) {
-    outputArea.text('記録を送信できませんでした');
-    return;
-  } // 記録を送信する
+function outputCannotStartTypingTest() {
+  outputArea.text('計測を開始できませんでした。F5 キーを押してページをリロードしてください。');
+}
+/**
+ * 記録を保存できなかった旨のエラーを出力
+ */
 
 
-  var resultObject = {
-    'timeMs': resultTimeMs,
-    '_csrf': csrfTokenArea.val()
-  };
-  jquery__WEBPACK_IMPORTED_MODULE_0___default().post('/typing-test/api/ranking', resultObject, 'json').then(function (object) {
-    _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(object.status, object.rankingRank);
-    showModal('記録を送信しました', "\u3042\u306A\u305F\u306E\u8A18\u9332\u306F ".concat(object.rankingRank, " \u4F4D\u3067\u3059"));
-    sendRecordToRankingButtonArea.text('記録を送信しました');
-  }, function (error) {
-    outputArea.text('記録を送信できませんでした');
-  });
-}); // 「リトライ」ボタン
+function outputCannotSaveResultError() {
+  outputArea.text('記録の保存に失敗しました。F5 キーを押してページをリロードしてください。');
+}
+/**
+ * 記録をネットランキングに送信できなかった旨のエラーを出力
+ */
 
-retryButtonArea.on('click', function () {
-  typingTest.reset();
-}); // コピー禁止
+
+function outputCannotSendRecordError() {
+  outputArea.text('記録をネットランキングに送信できませんでした。F5 キーを押してページをリロードしてください。');
+} // コピー禁止
+
 
 jquery__WEBPACK_IMPORTED_MODULE_0___default()(document.body).on('copy', function (e) {
   e.preventDefault();
@@ -18561,9 +18619,21 @@ var assert = /*#__PURE__*/function () {
 
   _createClass(assert, null, [{
     key: "eq",
+
+    /**
+     * actual と expected が等しい
+     * @param {*} actual
+     * @param {*} expected
+     * @param {string} message
+     */
     value: function eq(actual, expected, message) {
-      console.assert(actual === expected, "\nact: " + actual + "\nexp: " + expected + (typeof message === "undefined" ? "" : "\n" + message));
+      console.assert(actual === expected, '\nact: ' + actual + '\nexp: ' + expected + (typeof message === 'undefined' ? '' : '\n' + message));
     }
+    /**
+     * args が全て undefined でない
+     * @param  {...any} args
+     */
+
   }, {
     key: "defined",
     value: function defined() {
@@ -18572,13 +18642,17 @@ var assert = /*#__PURE__*/function () {
       }
 
       args.forEach(function (value) {
-        console.assert(typeof value != "undefined", "value is undefined");
+        console.assert(typeof value != 'undefined', 'value is undefined');
       });
     }
+    /**
+     * 到達するはずがないコードである
+     */
+
   }, {
     key: "shouldNotReach",
     value: function shouldNotReach() {
-      console.assert(false, "メッセージはでないはずだよ");
+      console.assert(false, 'メッセージはでないはずだよ');
     }
   }]);
 
