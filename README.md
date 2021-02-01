@@ -1,5 +1,7 @@
 # かな漢字タイピング
 
+[https://kk-typing.herokuapp.com](https://kk-typing.herokuapp.com)
+
 かな漢字変換込みのタイピング練習ツール
 
 ## 概要
