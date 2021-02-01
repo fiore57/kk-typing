@@ -283,15 +283,21 @@ var TypingTest = /*#__PURE__*/function () {
 
         var displayCharPerSecond = (charCount / (resultTimeMs / 1000)).toFixed(2);
         /**
+         * 表示する「文字/分」
+         *
+         * 小数第2位まで
+         * @type {string}
+         */
+
+        var displayCharPerMinute = (charCount / (resultTimeMs / (1000 * 60))).toFixed(2);
+        /**
          * 表示するメッセージ
          * @type {string}
          */
 
-        var displayMessage = recordRank === 1 ? "\u65B0\u8A18\u9332\u9054\u6210\uFF01" : "\u7B2C ".concat(recordRank, " \u4F4D");
-        console.log(_classPrivateFieldGet(_this, _typingTextList));
-        console.log(charCount); // WARNING: エスケープされていない文字列を入れないこと！！！
+        var displayMessage = recordRank === 1 ? "\u65B0\u8A18\u9332\u9054\u6210\uFF01" : "\u7B2C ".concat(recordRank, " \u4F4D"); // WARNING: エスケープされていない文字列を入れないこと！！！
 
-        resultBodyArea.html("Time: ".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayTime), " \u79D2<br>") + "".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayCharPerSecond), " \u6587\u5B57/\u79D2<br>") + "".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayMessage)));
+        resultBodyArea.html("Time: ".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayTime), " \u79D2<br>") + "".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayCharPerSecond), " \u6587\u5B57/\u79D2<br>") + "".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayCharPerMinute), " \u6587\u5B57/\u5206<br>") + "".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayMessage)));
         resultArea.show();
         resultButtonsArea.show();
 

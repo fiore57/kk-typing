@@ -196,6 +196,13 @@ class TypingTest {
          */
         const displayCharPerSecond = (charCount / (resultTimeMs / 1000)).toFixed(2);
         /**
+         * 表示する「文字/分」
+         *
+         * 小数第2位まで
+         * @type {string}
+         */
+        const displayCharPerMinute = (charCount / (resultTimeMs / (1000 * 60))).toFixed(2);
+        /**
          * 表示するメッセージ
          * @type {string}
          */
@@ -207,7 +214,8 @@ class TypingTest {
         resultBodyArea.html(
           `Time: ${utils.escapeText(displayTime)} 秒<br>` +
           `${utils.escapeText(displayCharPerSecond)} 文字/秒<br>` +
-          `${ utils.escapeText(displayMessage) }`
+          `${utils.escapeText(displayCharPerMinute)} 文字/分<br>` +
+          `${utils.escapeText(displayMessage)}`
         );
 
         resultArea.show();
