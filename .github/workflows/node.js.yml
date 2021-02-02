@@ -23,6 +23,9 @@ jobs:
       postgres:
         # Docker Hubのイメージ
         image: postgres
+        # postgresのパスワードを提供
+        env:
+          POSTGRES_PASSWORD: postgres
         # postgresが起動するまで待つヘルスチェックの設定
         options: >-
           --health-cmd pg_isready
