@@ -16,17 +16,11 @@ if (process.env.NODE_ENV === 'production' || (!process.env.POSTGRES_HOST || !pro
   );
 }
 else {
+  // CI 用
   sequelize = new Sequelize('kk_typing', 'postgres', 'postgres', {
     host: process.env.POSTGRES_HOST,
     port: process.env.POSTGRES_PORT,
     dialect: 'postgres',
-    // logging: false, // ログを出力しない
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false
-      }
-    }
   });
 }
 
