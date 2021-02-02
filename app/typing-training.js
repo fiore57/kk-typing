@@ -18,7 +18,7 @@ const outputArea = $('#output');
 const resultButtonsArea = $('#resultButtons');
 const retryButtonArea = $('#retryButton');
 
-class TypingTraining {
+export default class TypingTraining {
   /**
    * タイピングトレーニング中かどうか
    * @type {boolean}
@@ -141,7 +141,11 @@ class TypingTraining {
     assert.defined(this.#timer);
     this.#timer.stop();
 
-    const resultTimeMs = this.#timer.elapsedTimeMs;
+    const resultTimeMs = this.resultTimeMs;
+    if (resultTimeMs < 0) {
+      outputArea.text('計測に失敗しました');
+      return;
+    }
 
     // 結果の表示
     /**
@@ -155,7 +159,7 @@ class TypingTraining {
      * typingText の文字数
      * @type {number}
      */
-    const charCount = this.#typingTextList.reduce(((acc, cur) => acc + cur.length), 0);
+    const charCount = this.typingTextCharCount;
     /**
      * 表示する「文字/秒」
      *
@@ -181,11 +185,21 @@ class TypingTraining {
     resultButtonsArea.show();
   }
   /**
+   * isInTraining の getter
+   *
    * タイピングトレーニング中か否か
    * @type {boolean}
    */
   get isInTraining() {
     return this.#isInTraining;
+  }
+  /**
+   * isInTraining の setter
+   *
+   * 子クラス用
+   */
+  set isInTraining(isInTraining) {
+    this.#isInTraining = isInTraining;
   }
   /**
    * タイム (ms)
@@ -234,6 +248,22 @@ class TypingTraining {
     const suffix = text.length <= len ? '' : '...';
     return `NEXT: ${textSubstr}${suffix}`;
   }
+  /**
+   * typingText の文字列の長さ（正確にはコードポイント数）
+   * @type {number}
+   */
+  get typingTextCharCount() {
+    return this.#typingTextList.reduce(((acc, cur) => acc + cur.length), 0);
+  }
+  /**
+   * タイマーオブジェクト
+   *
+   * 子クラス用
+   * @type {Timer}
+   */
+  get timer() {
+    return this.#timer;
+  }
 }
 
 let typingTraining;
@@ -253,7 +283,7 @@ inputFileArea.on('change', event => {
 
   const reader = new FileReader();
   reader.onload = (event) => {
-    // 読み込んだファイルのテキストを typingTextList にセット
+    // 読み込んだファイルのテキストを typingTextList に入れる
     const typingText = event.target.result;
     const typingTextList = typingText.split('\n');
     const formattedTypingTextList = typingTextList.map(text => text.trim()).filter(text => text !== '');

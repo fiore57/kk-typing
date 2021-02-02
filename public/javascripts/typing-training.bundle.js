@@ -17950,193 +17950,6 @@ Popper.Defaults = Defaults;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => /* binding */ Timer
-/* harmony export */ });
-/* harmony import */ var _lib_assert__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
-
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classPrivateFieldGet(receiver, privateMap) { var descriptor = privateMap.get(receiver); if (!descriptor) { throw new TypeError("attempted to get private field on non-instance"); } if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
-
-function _classPrivateFieldSet(receiver, privateMap, value) { var descriptor = privateMap.get(receiver); if (!descriptor) { throw new TypeError("attempted to set private field on non-instance"); } if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } return value; }
-
-
-
-var _isRunningTimer = new WeakMap();
-
-var _startTimeMs = new WeakMap();
-
-var _elapsedTimeMs = new WeakMap();
-
-var _timerArea = new WeakMap();
-
-var Timer = /*#__PURE__*/function () {
-  /**
-   * タイマーが動いているかどうか
-   * @type {boolean}
-   */
-
-  /**
-   * 計測開始時間
-   * @type {number}
-   */
-
-  /**
-   * 経過時間
-   * @type {number}
-   */
-
-  /**
-   * タイマーの描画先
-   * @type {jQuery}
-   */
-
-  /**
-   * @param {jQuery} timerArea タイマーの描画先
-   */
-  function Timer(timerArea) {
-    var _this = this;
-
-    _classCallCheck(this, Timer);
-
-    _isRunningTimer.set(this, {
-      writable: true,
-      value: false
-    });
-
-    _startTimeMs.set(this, {
-      writable: true,
-      value: void 0
-    });
-
-    _elapsedTimeMs.set(this, {
-      writable: true,
-      value: 0
-    });
-
-    _timerArea.set(this, {
-      writable: true,
-      value: void 0
-    });
-
-    _defineProperty(this, "updateTime", function () {
-      if (_classPrivateFieldGet(_this, _isRunningTimer)) {
-        _classPrivateFieldSet(_this, _elapsedTimeMs, Date.now() - _classPrivateFieldGet(_this, _startTimeMs));
-
-        _this.drawTime();
-
-        window.requestAnimationFrame(_this.updateTime);
-      }
-    });
-
-    _lib_assert__WEBPACK_IMPORTED_MODULE_0__.default.defined(timerArea);
-
-    _classPrivateFieldSet(this, _timerArea, timerArea);
-
-    this.reset();
-  }
-  /**
-   * 計測を開始する
-   */
-
-
-  _createClass(Timer, [{
-    key: "start",
-    value: function start() {
-      _classPrivateFieldSet(this, _isRunningTimer, true);
-
-      _classPrivateFieldSet(this, _startTimeMs, Date.now());
-
-      _classPrivateFieldSet(this, _elapsedTimeMs, 0);
-
-      window.requestAnimationFrame(this.updateTime);
-    }
-    /**
-     * タイマーを止める（タイムは保持する）
-     */
-
-  }, {
-    key: "stop",
-    value: function stop() {
-      _classPrivateFieldSet(this, _isRunningTimer, false);
-
-      _classPrivateFieldSet(this, _elapsedTimeMs, Date.now() - _classPrivateFieldGet(this, _startTimeMs));
-
-      this.drawTime();
-    }
-    /**
-     * タイマーをリセットする（タイムは破棄する）
-     */
-
-  }, {
-    key: "reset",
-    value: function reset() {
-      _classPrivateFieldSet(this, _isRunningTimer, false);
-
-      _classPrivateFieldSet(this, _elapsedTimeMs, 0);
-
-      this.drawTime();
-    }
-    /**
-     * requestAnimationFrame のループで呼ばれる関数
-     *
-     * 現在の経過時間を計算し、描画する
-     */
-
-  }, {
-    key: "drawTime",
-
-    /**
-     * 現在の経過時間を描画する
-     *
-     * 値は小数第1位まで表示する
-     */
-    value: function drawTime() {
-      _classPrivateFieldGet(this, _timerArea).text(this.displayTime);
-    }
-    /**
-     * 現在の経過時間 (ms)
-     * @type {number}
-     */
-
-  }, {
-    key: "elapsedTimeMs",
-    get: function get() {
-      return _classPrivateFieldGet(this, _elapsedTimeMs);
-    }
-    /**
-     * 表示する時間を小数（文字列）で返す
-     *
-     * 値は小数第1位まで表示する
-     * @return {string} 経過時間(s)
-     */
-
-  }, {
-    key: "displayTime",
-    get: function get() {
-      return (this.elapsedTimeMs / 1000).toFixed(1);
-    }
-  }]);
-
-  return Timer;
-}();
-
-
-
-/***/ }),
-/* 5 */
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => /* binding */ assert
 /* harmony export */ });
 
@@ -18197,7 +18010,7 @@ var assert = /*#__PURE__*/function () {
 
 
 /***/ }),
-/* 6 */
+/* 5 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -18205,7 +18018,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "escapeText": () => /* binding */ escapeText
 /* harmony export */ });
-/* harmony import */ var _assert__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
+/* harmony import */ var _assert__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1);
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_1__);
 
@@ -18224,18 +18037,21 @@ function escapeText(value) {
 }
 
 /***/ }),
-/* 7 */
+/* 6 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => /* binding */ TypingTraining
+/* harmony export */ });
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
 /* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(bootstrap__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _timer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4);
-/* harmony import */ var _lib_assert__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(5);
-/* harmony import */ var _lib_utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(6);
+/* harmony import */ var _timer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7);
+/* harmony import */ var _lib_assert__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(4);
+/* harmony import */ var _lib_utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -18445,7 +18261,12 @@ var TypingTraining = /*#__PURE__*/function () {
 
       _classPrivateFieldGet(this, _timer).stop();
 
-      var resultTimeMs = _classPrivateFieldGet(this, _timer).elapsedTimeMs; // 結果の表示
+      var resultTimeMs = this.resultTimeMs;
+
+      if (resultTimeMs < 0) {
+        outputArea.text('計測に失敗しました');
+        return;
+      } // 結果の表示
 
       /**
        * 表示するタイム (s)
@@ -18461,16 +18282,13 @@ var TypingTraining = /*#__PURE__*/function () {
        * @type {number}
        */
 
-      var charCount = _classPrivateFieldGet(this, _typingTextList).reduce(function (acc, cur) {
-        return acc + cur.length;
-      }, 0);
+      var charCount = this.typingTextCharCount;
       /**
        * 表示する「文字/秒」
        *
        * 小数第2位まで
        * @type {string}
        */
-
 
       var displayCharPerSecond = (charCount / (resultTimeMs / 1000)).toFixed(2);
       /**
@@ -18487,6 +18305,8 @@ var TypingTraining = /*#__PURE__*/function () {
       resultButtonsArea.show();
     }
     /**
+     * isInTraining の getter
+     *
      * タイピングトレーニング中か否か
      * @type {boolean}
      */
@@ -18495,6 +18315,15 @@ var TypingTraining = /*#__PURE__*/function () {
     key: "isInTraining",
     get: function get() {
       return _classPrivateFieldGet(this, _isInTraining);
+    }
+    /**
+     * isInTraining の setter
+     *
+     * 子クラス用
+     */
+    ,
+    set: function set(isInTraining) {
+      _classPrivateFieldSet(this, _isInTraining, isInTraining);
     }
     /**
      * タイム (ms)
@@ -18557,10 +18386,35 @@ var TypingTraining = /*#__PURE__*/function () {
       var suffix = text.length <= len ? '' : '...';
       return "NEXT: ".concat(textSubstr).concat(suffix);
     }
+    /**
+     * typingText の文字列の長さ（正確にはコードポイント数）
+     * @type {number}
+     */
+
+  }, {
+    key: "typingTextCharCount",
+    get: function get() {
+      return _classPrivateFieldGet(this, _typingTextList).reduce(function (acc, cur) {
+        return acc + cur.length;
+      }, 0);
+    }
+    /**
+     * タイマーオブジェクト
+     *
+     * 子クラス用
+     * @type {Timer}
+     */
+
+  }, {
+    key: "timer",
+    get: function get() {
+      return _classPrivateFieldGet(this, _timer);
+    }
   }]);
 
   return TypingTraining;
 }();
+
 
 var typingTraining;
 var inputFileArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#inputFile'); // 「ファイルを選択」ボタン
@@ -18580,7 +18434,7 @@ inputFileArea.on('change', function (event) {
   var reader = new FileReader();
 
   reader.onload = function (event) {
-    // 読み込んだファイルのテキストを typingTextList にセット
+    // 読み込んだファイルのテキストを typingTextList に入れる
     var typingText = event.target.result;
     var typingTextList = typingText.split('\n');
     var formattedTypingTextList = typingTextList.map(function (text) {
@@ -18605,7 +18459,7 @@ inputFileArea.on('change', function (event) {
  */
 
 function initialize() {
-  // タイピングテストの開始・リセット用
+  // タイピングトレーニングの開始・リセット用
   jquery__WEBPACK_IMPORTED_MODULE_0___default()(document.body).on('keydown', function (event) {
     var startKeyList = ['Enter'];
     var resetKeyList = ['Escape'];
@@ -18616,7 +18470,7 @@ function initialize() {
       // Vimmium を使っていると、typingInputArea にフォーカスがあるときに Esc が検出されない
       typingTraining.reset();
     }
-  }); // タイピングテスト中、入力した文字列の確定用
+  }); // タイピングトレーニング中、入力した文字列の確定用
 
   typingInputArea.on('change', function () {
     if (typingTraining.isInTraining) {
@@ -18638,6 +18492,193 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()(document.body).on('copy', function
 typingInputArea.on('paste', function (e) {
   e.preventDefault();
 });
+
+/***/ }),
+/* 7 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => /* binding */ Timer
+/* harmony export */ });
+/* harmony import */ var _lib_assert__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classPrivateFieldGet(receiver, privateMap) { var descriptor = privateMap.get(receiver); if (!descriptor) { throw new TypeError("attempted to get private field on non-instance"); } if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
+
+function _classPrivateFieldSet(receiver, privateMap, value) { var descriptor = privateMap.get(receiver); if (!descriptor) { throw new TypeError("attempted to set private field on non-instance"); } if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } return value; }
+
+
+
+var _isRunningTimer = new WeakMap();
+
+var _startTimeMs = new WeakMap();
+
+var _elapsedTimeMs = new WeakMap();
+
+var _timerArea = new WeakMap();
+
+var Timer = /*#__PURE__*/function () {
+  /**
+   * タイマーが動いているかどうか
+   * @type {boolean}
+   */
+
+  /**
+   * 計測開始時間
+   * @type {number}
+   */
+
+  /**
+   * 経過時間
+   * @type {number}
+   */
+
+  /**
+   * タイマーの描画先
+   * @type {jQuery}
+   */
+
+  /**
+   * @param {jQuery} timerArea タイマーの描画先
+   */
+  function Timer(timerArea) {
+    var _this = this;
+
+    _classCallCheck(this, Timer);
+
+    _isRunningTimer.set(this, {
+      writable: true,
+      value: false
+    });
+
+    _startTimeMs.set(this, {
+      writable: true,
+      value: void 0
+    });
+
+    _elapsedTimeMs.set(this, {
+      writable: true,
+      value: 0
+    });
+
+    _timerArea.set(this, {
+      writable: true,
+      value: void 0
+    });
+
+    _defineProperty(this, "updateTime", function () {
+      if (_classPrivateFieldGet(_this, _isRunningTimer)) {
+        _classPrivateFieldSet(_this, _elapsedTimeMs, Date.now() - _classPrivateFieldGet(_this, _startTimeMs));
+
+        _this.drawTime();
+
+        window.requestAnimationFrame(_this.updateTime);
+      }
+    });
+
+    _lib_assert__WEBPACK_IMPORTED_MODULE_0__.default.defined(timerArea);
+
+    _classPrivateFieldSet(this, _timerArea, timerArea);
+
+    this.reset();
+  }
+  /**
+   * 計測を開始する
+   */
+
+
+  _createClass(Timer, [{
+    key: "start",
+    value: function start() {
+      _classPrivateFieldSet(this, _isRunningTimer, true);
+
+      _classPrivateFieldSet(this, _startTimeMs, Date.now());
+
+      _classPrivateFieldSet(this, _elapsedTimeMs, 0);
+
+      window.requestAnimationFrame(this.updateTime);
+    }
+    /**
+     * タイマーを止める（タイムは保持する）
+     */
+
+  }, {
+    key: "stop",
+    value: function stop() {
+      _classPrivateFieldSet(this, _isRunningTimer, false);
+
+      _classPrivateFieldSet(this, _elapsedTimeMs, Date.now() - _classPrivateFieldGet(this, _startTimeMs));
+
+      this.drawTime();
+    }
+    /**
+     * タイマーをリセットする（タイムは破棄する）
+     */
+
+  }, {
+    key: "reset",
+    value: function reset() {
+      _classPrivateFieldSet(this, _isRunningTimer, false);
+
+      _classPrivateFieldSet(this, _elapsedTimeMs, 0);
+
+      this.drawTime();
+    }
+    /**
+     * requestAnimationFrame のループで呼ばれる関数
+     *
+     * 現在の経過時間を計算し、描画する
+     */
+
+  }, {
+    key: "drawTime",
+
+    /**
+     * 現在の経過時間を描画する
+     *
+     * 値は小数第1位まで表示する
+     */
+    value: function drawTime() {
+      _classPrivateFieldGet(this, _timerArea).text(this.displayTime);
+    }
+    /**
+     * 現在の経過時間 (ms)
+     * @type {number}
+     */
+
+  }, {
+    key: "elapsedTimeMs",
+    get: function get() {
+      return _classPrivateFieldGet(this, _elapsedTimeMs);
+    }
+    /**
+     * 表示する時間を小数（文字列）で返す
+     *
+     * 値は小数第1位まで表示する
+     * @return {string} 経過時間(s)
+     */
+
+  }, {
+    key: "displayTime",
+    get: function get() {
+      return (this.elapsedTimeMs / 1000).toFixed(1);
+    }
+  }]);
+
+  return Timer;
+}();
+
+
 
 /***/ })
 /******/ 	]);
@@ -18721,7 +18762,7 @@ typingInputArea.on('paste', function (e) {
 /************************************************************************/
 /******/ 	// startup
 /******/ 	// Load entry module
-/******/ 	__webpack_require__(7);
+/******/ 	__webpack_require__(6);
 /******/ 	// This entry module used 'exports' so it can't be inlined
 /******/ })()
 ;

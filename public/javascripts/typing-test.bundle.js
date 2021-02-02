@@ -9,10 +9,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
 /* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(bootstrap__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _timer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4);
-/* harmony import */ var _lib_assert__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(5);
-/* harmony import */ var _lib_utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(6);
+/* harmony import */ var _lib_assert__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4);
+/* harmony import */ var _lib_utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(5);
+/* harmony import */ var _typing_training__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(6);
 
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -20,9 +22,29 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _classPrivateFieldGet(receiver, privateMap) { var descriptor = privateMap.get(receiver); if (!descriptor) { throw new TypeError("attempted to get private field on non-instance"); } if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
+function set(target, property, value, receiver) { if (typeof Reflect !== "undefined" && Reflect.set) { set = Reflect.set; } else { set = function set(target, property, value, receiver) { var base = _superPropBase(target, property); var desc; if (base) { desc = Object.getOwnPropertyDescriptor(base, property); if (desc.set) { desc.set.call(receiver, value); return true; } else if (!desc.writable) { return false; } } desc = Object.getOwnPropertyDescriptor(receiver, property); if (desc) { if (!desc.writable) { return false; } desc.value = value; Object.defineProperty(receiver, property, desc); } else { _defineProperty(receiver, property, value); } return true; }; } return set(target, property, value, receiver); }
 
-function _classPrivateFieldSet(receiver, privateMap, value) { var descriptor = privateMap.get(receiver); if (!descriptor) { throw new TypeError("attempted to set private field on non-instance"); } if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } return value; }
+function _set(target, property, value, receiver, isStrict) { var s = set(target, property, value, receiver || target); if (!s && isStrict) { throw new Error('failed to set property'); } return value; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get(target, property, receiver || target); }
+
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 
 var global = Function('return this;')();
@@ -31,10 +53,7 @@ global.jQuery = (jquery__WEBPACK_IMPORTED_MODULE_0___default());
 
 
 
-var messageArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#message');
-var curTypingTextArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#curTypingText');
 var typingInputArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#typingInput');
-var nextTypingTextArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#nextTypingText');
 var resultArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#result');
 var resultBodyArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#resultBody');
 var outputArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#output');
@@ -43,187 +62,59 @@ var sendRecordToRankingButtonArea = jquery__WEBPACK_IMPORTED_MODULE_0___default(
 var retryButtonArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#retryButton');
 var csrfTokenArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#csrfToken');
 
-var _isInTest = new WeakMap();
+var TypingTest = /*#__PURE__*/function (_TypingTraining) {
+  _inherits(TypingTest, _TypingTraining);
 
-var _timer = new WeakMap();
+  var _super = _createSuper(TypingTest);
 
-var _curTypingTextIndex = new WeakMap();
-
-var _typingTextList = new WeakMap();
-
-var TypingTest = /*#__PURE__*/function () {
-  /**
-   * タイピングテスト中かどうか
-   * @type {boolean}
-   */
-
-  /**
-   * タイマー
-   * @type {Timer}
-   */
-
-  /**
-   * 現在入力している this.#typingTextList の index
-   *
-   * 開始前は -1
-   * @type {number}
-   */
-
-  /**
-   * 入力する文字列のリスト
-   * @type {Array<string>}
-   */
   function TypingTest(typingTextList) {
     _classCallCheck(this, TypingTest);
 
-    _isInTest.set(this, {
-      writable: true,
-      value: false
-    });
-
-    _timer.set(this, {
-      writable: true,
-      value: void 0
-    });
-
-    _curTypingTextIndex.set(this, {
-      writable: true,
-      value: -1
-    });
-
-    _typingTextList.set(this, {
-      writable: true,
-      value: void 0
-    });
-
-    _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(typingTextList);
-    var timerArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#timer');
-
-    _classPrivateFieldSet(this, _timer, new _timer__WEBPACK_IMPORTED_MODULE_2__.default(timerArea));
-
-    _classPrivateFieldSet(this, _typingTextList, typingTextList);
-
-    this.reset();
+    return _super.call(this, typingTextList);
   }
   /**
    * 開始処理
+   *
+   * TypingTest 特有の開始処理を含む
    */
 
 
   _createClass(TypingTest, [{
-    key: "start",
-    value: function start() {
-      this.reset();
+    key: "_start",
+    value: function _start() {
+      _get(_getPrototypeOf(TypingTest.prototype), "start", this).call(this); // TypingTraining の開始処理
+      // /typing-test/api/start に POST
 
-      _classPrivateFieldSet(this, _isInTest, true);
-
-      _classPrivateFieldSet(this, _curTypingTextIndex, 0);
-
-      _classPrivateFieldGet(this, _timer).start();
-
-      messageArea.text('Esc でリセット');
-      curTypingTextArea.text(this.curTypingText);
-      nextTypingTextArea.text(this.displayNextTypingText);
-      typingInputArea.trigger('focus'); // /typing-test/api/start に POST
 
       jquery__WEBPACK_IMPORTED_MODULE_0___default().post('/typing-test/api/start', {
         '_csrf': csrfTokenArea.val()
       }, 'json').then(function (object) {
-        _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(object.status);
-        _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.eq(object.status, 'OK');
+        _lib_assert__WEBPACK_IMPORTED_MODULE_2__.default.defined(object.status);
+        _lib_assert__WEBPACK_IMPORTED_MODULE_2__.default.eq(object.status, 'OK');
       }, function (error) {
         outputCannotStartTypingTest();
       });
     }
     /**
      * リセット処理
+     *
+     * TypingTest 特有のリセット処理を含む
      */
 
   }, {
-    key: "reset",
-    value: function reset() {
-      _classPrivateFieldSet(this, _isInTest, false);
+    key: "_reset",
+    value: function _reset() {
+      _get(_getPrototypeOf(TypingTest.prototype), "reset", this).call(this); // TypingTraining のリセット処理
 
-      _classPrivateFieldSet(this, _curTypingTextIndex, -1);
 
-      _classPrivateFieldGet(this, _timer).reset();
-
-      messageArea.text('Enter を押してスタート');
-      curTypingTextArea.text(this.curTypingText);
-      typingInputArea.val('');
-      nextTypingTextArea.text(this.displayNextTypingText);
-      resultArea.hide();
-      resultBodyArea.text('');
-      outputArea.text('');
       sendRecordToRankingButtonArea.hide();
       sendRecordToRankingButtonArea.prop('disabled', false);
       sendRecordToRankingButtonArea.text('ネットランキングに記録を送信');
-      resultButtonsArea.hide();
-    }
-    /**
-     * 入力文字列が確定されたときの処理
-     * @param {string} inputText 入力された文字列
-     */
-
-  }, {
-    key: "input",
-    value: function input(inputText) {
-      _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(inputText); // 入力された文字列と curTypingText の差分を表示
-      // WARNING: エスケープされていない文字列を入れないこと！！！
-
-      curTypingTextArea.html(this.getTextDiffStringIncludesSpanTag(inputText));
-      var isCorrectInput = inputText === this.curTypingText;
-
-      if (isCorrectInput) {
-        // 入力文字列が正しい場合
-        typingInputArea.val('');
-
-        _classPrivateFieldSet(this, _curTypingTextIndex, +_classPrivateFieldGet(this, _curTypingTextIndex) + 1);
-
-        var isFinished = _classPrivateFieldGet(this, _curTypingTextIndex) === _classPrivateFieldGet(this, _typingTextList).length;
-
-        if (isFinished) {
-          this.finish();
-          return;
-        } // テキストを更新
-
-
-        curTypingTextArea.text(this.curTypingText);
-        nextTypingTextArea.text(this.displayNextTypingText);
-      }
-    }
-    /**
-     * curTypingText のうち、入力された文字列と一致
-     * する文字を灰色に、異なる文字を赤色にする span
-     * タグを付けた文字列を返す（未入力の文字はタグなし）
-     * @param {string} inputText 入力された文字列
-     * @return {string} curTypingText に span タグを付与したもの
-     */
-
-  }, {
-    key: "getTextDiffStringIncludesSpanTag",
-    value: function getTextDiffStringIncludesSpanTag(inputText) {
-      _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(inputText);
-      var curTypingText = this.curTypingText;
-      var lastIndex = Math.min(inputText.length, curTypingText.length);
-      var res = "";
-
-      for (var i = 0; i < lastIndex; ++i) {
-        if (inputText[i] === curTypingText[i]) {
-          // 一致する（入力済み）なら灰色
-          res += "<span style=\"color:#cccccc;\">".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(curTypingText[i]), "</span>");
-        } else {
-          // 一致しない（誤り）なら赤色（下線付き）
-          res += "<span class=\"border-bottom border-secondary\" style=\"color:red\">".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(curTypingText[i]), "</span>");
-        }
-      } // 未入力なら黒色
-
-
-      res += _lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(curTypingText.substring(lastIndex));
-      return res;
     }
     /**
      * 打ち終わったときの処理
+     *
+     * TypingTest 特有の処理のため、オーバーライドする
      */
 
   }, {
@@ -231,13 +122,18 @@ var TypingTest = /*#__PURE__*/function () {
     value: function finish() {
       var _this = this;
 
-      _classPrivateFieldSet(this, _isInTest, false);
+      _set(_getPrototypeOf(TypingTest.prototype), "isInTraining", false, this, true);
 
-      _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(_classPrivateFieldGet(this, _timer));
+      _lib_assert__WEBPACK_IMPORTED_MODULE_2__.default.defined(_get(_getPrototypeOf(TypingTest.prototype), "timer", this));
 
-      _classPrivateFieldGet(this, _timer).stop();
+      _get(_getPrototypeOf(TypingTest.prototype), "timer", this).stop();
 
-      var resultTimeMs = _classPrivateFieldGet(this, _timer).elapsedTimeMs; // 結果を記録する
+      var resultTimeMs = _get(_getPrototypeOf(TypingTest.prototype), "resultTimeMs", this);
+
+      if (resultTimeMs < 0) {
+        outputArea.text('計測に失敗しました');
+        return;
+      } // 結果を記録する
 
 
       var resultObject = {
@@ -245,15 +141,15 @@ var TypingTest = /*#__PURE__*/function () {
         '_csrf': csrfTokenArea.val()
       };
       jquery__WEBPACK_IMPORTED_MODULE_0___default().post('/typing-test/api/record', resultObject, 'json').then(function (object) {
-        _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(object.status);
+        _lib_assert__WEBPACK_IMPORTED_MODULE_2__.default.defined(object.status);
 
         if (object.status === 'NG') {
           outputCannotSaveResultError();
           return;
         }
 
-        _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.eq(object.status, 'OK');
-        _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(object.recordRank, object.canUpdateRanking);
+        _lib_assert__WEBPACK_IMPORTED_MODULE_2__.default.eq(object.status, 'OK');
+        _lib_assert__WEBPACK_IMPORTED_MODULE_2__.default.defined(object.recordRank, object.canUpdateRanking);
         var recordRank = parseInt(object.recordRank);
         var canUpdateRanking = object.canUpdateRanking; // 結果の表示
 
@@ -270,9 +166,7 @@ var TypingTest = /*#__PURE__*/function () {
          * @type {number}
          */
 
-        var charCount = _classPrivateFieldGet(_this, _typingTextList).reduce(function (acc, cur) {
-          return acc + cur.length;
-        }, 0);
+        var charCount = _get(_getPrototypeOf(TypingTest.prototype), "typingTextCharCount", _this);
         /**
          * 表示する「文字/秒」
          *
@@ -297,7 +191,7 @@ var TypingTest = /*#__PURE__*/function () {
 
         var displayMessage = recordRank === 1 ? "\u65B0\u8A18\u9332\u9054\u6210\uFF01" : "\u7B2C ".concat(recordRank, " \u4F4D"); // WARNING: エスケープされていない文字列を入れないこと！！！
 
-        resultBodyArea.html("Time: ".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayTime), " \u79D2<br>") + "".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayCharPerSecond), " \u6587\u5B57/\u79D2<br>") + "".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayCharPerMinute), " \u6587\u5B57/\u5206<br>") + "".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayMessage)));
+        resultBodyArea.html("Time: ".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_3__.escapeText(displayTime), " \u79D2<br>") + "".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_3__.escapeText(displayCharPerSecond), " \u6587\u5B57/\u79D2<br>") + "".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_3__.escapeText(displayCharPerMinute), " \u6587\u5B57/\u5206<br>") + "".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_3__.escapeText(displayMessage)));
         resultArea.show();
         resultButtonsArea.show();
 
@@ -308,86 +202,15 @@ var TypingTest = /*#__PURE__*/function () {
         outputCannotSaveResultError();
       });
     }
-    /**
-     * タイピングテスト中か否か
-     * @type {boolean}
-     */
-
-  }, {
-    key: "isInTest",
-    get: function get() {
-      return _classPrivateFieldGet(this, _isInTest);
-    }
-    /**
-     * タイム (ms)
-     *
-     * タイムが取得できない場合、-1
-     * @type {number}
-     */
-
-  }, {
-    key: "resultTimeMs",
-    get: function get() {
-      if (_classPrivateFieldGet(this, _isInTest) || _classPrivateFieldGet(this, _timer).elapsedTimeMs === 0) return -1;
-      return _classPrivateFieldGet(this, _timer).elapsedTimeMs;
-    }
-    /**
-     * 現在の文字列
-     *
-     * 現在の文字列が存在しない場合（開始前を含む）、空文字列を返す
-     * @type {string}
-     */
-
-  }, {
-    key: "curTypingText",
-    get: function get() {
-      var curIndex = _classPrivateFieldGet(this, _curTypingTextIndex);
-
-      var list = _classPrivateFieldGet(this, _typingTextList);
-
-      if (curIndex < 0 || curIndex >= list.length) return '';else return list[curIndex];
-    }
-    /**
-     * 次の文字列
-     *
-     * 次の文字列が存在しない場合、空文字列を返す
-     * @type {string}
-     */
-
-  }, {
-    key: "nextTypingText",
-    get: function get() {
-      var nextIndex = _classPrivateFieldGet(this, _curTypingTextIndex) + 1;
-
-      var list = _classPrivateFieldGet(this, _typingTextList);
-
-      if (nextIndex < 0 || nextIndex >= list.length) return '';else return list[nextIndex];
-    }
-    /**
-     * 次の文字列の先頭 30 文字に 'NEXT: ' という prefix を付けたもの
-     *
-     * 次の文字列が 30 文字より長い場合、 '...' という suffix を付ける
-     * @type {string}
-     */
-
-  }, {
-    key: "displayNextTypingText",
-    get: function get() {
-      var text = this.nextTypingText;
-      var len = 30;
-      var textSubstr = text.substring(0, len);
-      var suffix = text.length <= len ? '' : '...';
-      return "NEXT: ".concat(textSubstr).concat(suffix);
-    }
   }]);
 
   return TypingTest;
-}();
+}(_typing_training__WEBPACK_IMPORTED_MODULE_4__.default);
 
 var typingTest; // typingTextList を取得
 
 jquery__WEBPACK_IMPORTED_MODULE_0___default().get('/typing-test/api/get-text').then(function (object) {
-  _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(object.textList);
+  _lib_assert__WEBPACK_IMPORTED_MODULE_2__.default.defined(object.textList);
   var typingTextList = object.textList;
   typingTest = new TypingTest(typingTextList);
   initialize();
@@ -404,16 +227,16 @@ function initialize() {
     var startKeyList = ['Enter'];
     var resetKeyList = ['Escape'];
 
-    if (!typingTest.isInTest && startKeyList.includes(event.key)) {
-      typingTest.start();
+    if (!typingTest.isInTraining && startKeyList.includes(event.key)) {
+      typingTest._start();
     } else if (resetKeyList.includes(event.key)) {
       // Vimmium を使っていると、typingInputArea にフォーカスがあるときに Esc が検出されない
-      typingTest.reset();
+      typingTest._reset();
     }
   }); // タイピングテスト中、入力した文字列の確定用
 
   typingInputArea.on('change', function (event) {
-    if (typingTest.isInTest) {
+    if (typingTest.isInTraining) {
       var inputText = typingInputArea.val();
       typingTest.input(inputText);
     }
@@ -435,15 +258,15 @@ function initialize() {
       '_csrf': csrfTokenArea.val()
     };
     jquery__WEBPACK_IMPORTED_MODULE_0___default().post('/typing-test/api/ranking', resultObject, 'json').then(function (object) {
-      _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(object.status);
+      _lib_assert__WEBPACK_IMPORTED_MODULE_2__.default.defined(object.status);
 
       if (object.status === 'NG') {
         outputCannotSendRecordError();
         return;
       }
 
-      _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.eq(object.status, 'OK');
-      _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(object.rankingRank);
+      _lib_assert__WEBPACK_IMPORTED_MODULE_2__.default.eq(object.status, 'OK');
+      _lib_assert__WEBPACK_IMPORTED_MODULE_2__.default.defined(object.rankingRank);
       showModal('記録を送信しました', "\u3042\u306A\u305F\u306E\u8A18\u9332\u306F ".concat(object.rankingRank, " \u4F4D\u3067\u3059"));
       sendRecordToRankingButtonArea.text('記録を送信しました');
     }, function (error) {
@@ -452,7 +275,7 @@ function initialize() {
   }); // 「リトライ」ボタン
 
   retryButtonArea.on('click', function () {
-    typingTest.reset();
+    typingTest._reset();
   });
 }
 /**
@@ -463,7 +286,7 @@ function initialize() {
 
 
 function showModal(title, body) {
-  _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(title, body);
+  _lib_assert__WEBPACK_IMPORTED_MODULE_2__.default.defined(title, body);
   var modalArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#modal');
   modalArea.modal('show');
   var modalTitleArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#modalTitle');
@@ -18455,9 +18278,559 @@ Popper.Defaults = Defaults;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => /* binding */ assert
+/* harmony export */ });
+
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var assert = /*#__PURE__*/function () {
+  function assert() {
+    _classCallCheck(this, assert);
+  }
+
+  _createClass(assert, null, [{
+    key: "eq",
+
+    /**
+     * actual と expected が等しい
+     * @param {*} actual
+     * @param {*} expected
+     * @param {string} message
+     */
+    value: function eq(actual, expected, message) {
+      console.assert(actual === expected, '\nact: ' + actual + '\nexp: ' + expected + (typeof message === 'undefined' ? '' : '\n' + message));
+    }
+    /**
+     * args が全て undefined でない
+     * @param  {...any} args
+     */
+
+  }, {
+    key: "defined",
+    value: function defined() {
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      args.forEach(function (value) {
+        console.assert(typeof value != 'undefined', 'value is undefined');
+      });
+    }
+    /**
+     * 到達するはずがないコードである
+     */
+
+  }, {
+    key: "shouldNotReach",
+    value: function shouldNotReach() {
+      console.assert(false, 'メッセージはでないはずだよ');
+    }
+  }]);
+
+  return assert;
+}();
+
+
+
+/***/ }),
+/* 5 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "escapeText": () => /* binding */ escapeText
+/* harmony export */ });
+/* harmony import */ var _assert__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1);
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_1__);
+
+
+
+
+/**
+ * エスケープ処理を行う
+ * @param {string} value エスケープする文字列
+ * @return {string} エスケープされた文字列
+ */
+
+function escapeText(value) {
+  _assert__WEBPACK_IMPORTED_MODULE_0__.default.defined(value);
+  return jquery__WEBPACK_IMPORTED_MODULE_1___default()('<div />').text(value).html();
+}
+
+/***/ }),
+/* 6 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => /* binding */ TypingTraining
+/* harmony export */ });
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
+/* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(bootstrap__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _timer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7);
+/* harmony import */ var _lib_assert__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(4);
+/* harmony import */ var _lib_utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
+
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _classPrivateFieldGet(receiver, privateMap) { var descriptor = privateMap.get(receiver); if (!descriptor) { throw new TypeError("attempted to get private field on non-instance"); } if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
+
+function _classPrivateFieldSet(receiver, privateMap, value) { var descriptor = privateMap.get(receiver); if (!descriptor) { throw new TypeError("attempted to set private field on non-instance"); } if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } return value; }
+
+
+var global = Function('return this;')();
+global.jQuery = (jquery__WEBPACK_IMPORTED_MODULE_0___default());
+
+
+
+
+var messageArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#message');
+var curTypingTextArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#curTypingText');
+var typingInputArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#typingInput');
+var nextTypingTextArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#nextTypingText');
+var resultArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#result');
+var resultBodyArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#resultBody');
+var outputArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#output');
+var resultButtonsArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#resultButtons');
+var retryButtonArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#retryButton');
+
+var _isInTraining = new WeakMap();
+
+var _timer = new WeakMap();
+
+var _curTypingTextIndex = new WeakMap();
+
+var _typingTextList = new WeakMap();
+
+var TypingTraining = /*#__PURE__*/function () {
+  /**
+   * タイピングトレーニング中かどうか
+   * @type {boolean}
+   */
+
+  /**
+   * タイマー
+   * @type {Timer}
+   */
+
+  /**
+   * 現在入力している this.#typingTextList の index
+   *
+   * 開始前は -1
+   * @type {number}
+   */
+
+  /**
+   * 入力する文字列のリスト
+   * @type {Array<string>}
+   */
+  function TypingTraining(typingTextList) {
+    _classCallCheck(this, TypingTraining);
+
+    _isInTraining.set(this, {
+      writable: true,
+      value: false
+    });
+
+    _timer.set(this, {
+      writable: true,
+      value: void 0
+    });
+
+    _curTypingTextIndex.set(this, {
+      writable: true,
+      value: -1
+    });
+
+    _typingTextList.set(this, {
+      writable: true,
+      value: void 0
+    });
+
+    _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(typingTextList);
+    var timerArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#timer');
+
+    _classPrivateFieldSet(this, _timer, new _timer__WEBPACK_IMPORTED_MODULE_2__.default(timerArea));
+
+    _classPrivateFieldSet(this, _typingTextList, typingTextList);
+
+    this.reset();
+  }
+  /**
+   * 開始処理
+   */
+
+
+  _createClass(TypingTraining, [{
+    key: "start",
+    value: function start() {
+      this.reset();
+
+      _classPrivateFieldSet(this, _isInTraining, true);
+
+      _classPrivateFieldSet(this, _curTypingTextIndex, 0);
+
+      _classPrivateFieldGet(this, _timer).start();
+
+      messageArea.text('Esc でリセット');
+      curTypingTextArea.text(this.curTypingText);
+      nextTypingTextArea.text(this.displayNextTypingText);
+      typingInputArea.trigger('focus');
+    }
+    /**
+     * リセット処理
+     */
+
+  }, {
+    key: "reset",
+    value: function reset() {
+      _classPrivateFieldSet(this, _isInTraining, false);
+
+      _classPrivateFieldSet(this, _curTypingTextIndex, -1);
+
+      _classPrivateFieldGet(this, _timer).reset();
+
+      messageArea.text('Enter を押してスタート');
+      curTypingTextArea.text(this.curTypingText);
+      typingInputArea.val('');
+      nextTypingTextArea.text(this.displayNextTypingText);
+      resultArea.hide();
+      resultBodyArea.text('');
+      outputArea.text('');
+      resultButtonsArea.hide();
+    }
+    /**
+     * 入力文字列が確定されたときの処理
+     * @param {string} inputText 入力された文字列
+     */
+
+  }, {
+    key: "input",
+    value: function input(inputText) {
+      _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(inputText); // 入力された文字列と curTypingText の差分を表示
+      // WARNING: エスケープされていない文字列を入れないこと！！！
+
+      curTypingTextArea.html(this.getTextDiffStringIncludesSpanTag(inputText));
+      var isCorrectInput = inputText === this.curTypingText;
+
+      if (isCorrectInput) {
+        // 入力文字列が正しい場合
+        typingInputArea.val('');
+
+        _classPrivateFieldSet(this, _curTypingTextIndex, +_classPrivateFieldGet(this, _curTypingTextIndex) + 1);
+
+        var isFinished = _classPrivateFieldGet(this, _curTypingTextIndex) === _classPrivateFieldGet(this, _typingTextList).length;
+
+        if (isFinished) {
+          this.finish();
+          return;
+        } // テキストを更新
+
+
+        curTypingTextArea.text(this.curTypingText);
+        nextTypingTextArea.text(this.displayNextTypingText);
+      }
+    }
+    /**
+     * curTypingText のうち、入力された文字列と一致
+     * する文字を灰色に、異なる文字を赤色にする span
+     * タグを付けた文字列を返す（未入力の文字はタグなし）
+     * @param {string} inputText 入力された文字列
+     * @return {string} curTypingText に span タグを付与したもの
+     */
+
+  }, {
+    key: "getTextDiffStringIncludesSpanTag",
+    value: function getTextDiffStringIncludesSpanTag(inputText) {
+      _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(inputText);
+      var curTypingText = this.curTypingText;
+      var lastIndex = Math.min(inputText.length, curTypingText.length);
+      var res = "";
+
+      for (var i = 0; i < lastIndex; ++i) {
+        if (inputText[i] === curTypingText[i]) {
+          // 一致する（入力済み）なら灰色
+          res += "<span style=\"color:#cccccc;\">".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(curTypingText[i]), "</span>");
+        } else {
+          // 一致しない（誤り）なら赤色（下線付き）
+          res += "<span class=\"border-bottom border-secondary\" style=\"color:red\">".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(curTypingText[i]), "</span>");
+        }
+      } // 未入力なら黒色
+
+
+      res += _lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(curTypingText.substring(lastIndex));
+      return res;
+    }
+    /**
+     * 打ち終わったときの処理
+     */
+
+  }, {
+    key: "finish",
+    value: function finish() {
+      _classPrivateFieldSet(this, _isInTraining, false);
+
+      _lib_assert__WEBPACK_IMPORTED_MODULE_3__.default.defined(_classPrivateFieldGet(this, _timer));
+
+      _classPrivateFieldGet(this, _timer).stop();
+
+      var resultTimeMs = this.resultTimeMs;
+
+      if (resultTimeMs < 0) {
+        outputArea.text('計測に失敗しました');
+        return;
+      } // 結果の表示
+
+      /**
+       * 表示するタイム (s)
+       *
+       * 小数第3位まで
+       * @type {string}
+       */
+
+
+      var displayTime = (resultTimeMs / 1000).toFixed(3);
+      /**
+       * typingText の文字数
+       * @type {number}
+       */
+
+      var charCount = this.typingTextCharCount;
+      /**
+       * 表示する「文字/秒」
+       *
+       * 小数第2位まで
+       * @type {string}
+       */
+
+      var displayCharPerSecond = (charCount / (resultTimeMs / 1000)).toFixed(2);
+      /**
+       * 表示する「文字/分」
+       *
+       * 小数第2位まで
+       * @type {string}
+       */
+
+      var displayCharPerMinute = (charCount / (resultTimeMs / (1000 * 60))).toFixed(2); // WARNING: エスケープされていない文字列を入れないこと！！！
+
+      resultBodyArea.html("Time: ".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayTime), " \u79D2<br>") + "".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayCharPerSecond), " \u6587\u5B57/\u79D2<br>") + "".concat(_lib_utils__WEBPACK_IMPORTED_MODULE_4__.escapeText(displayCharPerMinute), " \u6587\u5B57/\u5206"));
+      resultArea.show();
+      resultButtonsArea.show();
+    }
+    /**
+     * isInTraining の getter
+     *
+     * タイピングトレーニング中か否か
+     * @type {boolean}
+     */
+
+  }, {
+    key: "isInTraining",
+    get: function get() {
+      return _classPrivateFieldGet(this, _isInTraining);
+    }
+    /**
+     * isInTraining の setter
+     *
+     * 子クラス用
+     */
+    ,
+    set: function set(isInTraining) {
+      _classPrivateFieldSet(this, _isInTraining, isInTraining);
+    }
+    /**
+     * タイム (ms)
+     *
+     * タイムが取得できない場合、-1
+     * @type {number}
+     */
+
+  }, {
+    key: "resultTimeMs",
+    get: function get() {
+      if (_classPrivateFieldGet(this, _isInTraining) || _classPrivateFieldGet(this, _timer).elapsedTimeMs === 0) return -1;
+      return _classPrivateFieldGet(this, _timer).elapsedTimeMs;
+    }
+    /**
+     * 現在の文字列
+     *
+     * 現在の文字列が存在しない場合（開始前を含む）、空文字列を返す
+     * @type {string}
+     */
+
+  }, {
+    key: "curTypingText",
+    get: function get() {
+      var curIndex = _classPrivateFieldGet(this, _curTypingTextIndex);
+
+      var list = _classPrivateFieldGet(this, _typingTextList);
+
+      if (curIndex < 0 || curIndex >= list.length) return '';else return list[curIndex];
+    }
+    /**
+     * 次の文字列
+     *
+     * 次の文字列が存在しない場合、空文字列を返す
+     * @type {string}
+     */
+
+  }, {
+    key: "nextTypingText",
+    get: function get() {
+      var nextIndex = _classPrivateFieldGet(this, _curTypingTextIndex) + 1;
+
+      var list = _classPrivateFieldGet(this, _typingTextList);
+
+      if (nextIndex < 0 || nextIndex >= list.length) return '';else return list[nextIndex];
+    }
+    /**
+     * 次の文字列の先頭 30 文字に 'NEXT: ' という prefix を付けたもの
+     *
+     * 次の文字列が 30 文字より長い場合、 '...' という suffix を付ける
+     * @type {string}
+     */
+
+  }, {
+    key: "displayNextTypingText",
+    get: function get() {
+      var text = this.nextTypingText;
+      var len = 30;
+      var textSubstr = text.substring(0, len);
+      var suffix = text.length <= len ? '' : '...';
+      return "NEXT: ".concat(textSubstr).concat(suffix);
+    }
+    /**
+     * typingText の文字列の長さ（正確にはコードポイント数）
+     * @type {number}
+     */
+
+  }, {
+    key: "typingTextCharCount",
+    get: function get() {
+      return _classPrivateFieldGet(this, _typingTextList).reduce(function (acc, cur) {
+        return acc + cur.length;
+      }, 0);
+    }
+    /**
+     * タイマーオブジェクト
+     *
+     * 子クラス用
+     * @type {Timer}
+     */
+
+  }, {
+    key: "timer",
+    get: function get() {
+      return _classPrivateFieldGet(this, _timer);
+    }
+  }]);
+
+  return TypingTraining;
+}();
+
+
+var typingTraining;
+var inputFileArea = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#inputFile'); // 「ファイルを選択」ボタン
+
+inputFileArea.on('change', function (event) {
+  var files = event.target.files; // ファイルが選択されていない場合
+
+  if (files.length === 0) {
+    if (typingTraining) {
+      // typingTraining !== undefined ならば reset
+      typingTraining.reset();
+    }
+
+    return;
+  }
+
+  var reader = new FileReader();
+
+  reader.onload = function (event) {
+    // 読み込んだファイルのテキストを typingTextList に入れる
+    var typingText = event.target.result;
+    var typingTextList = typingText.split('\n');
+    var formattedTypingTextList = typingTextList.map(function (text) {
+      return text.trim();
+    }).filter(function (text) {
+      return text !== '';
+    });
+    typingTraining = new TypingTraining(formattedTypingTextList);
+    initialize();
+  };
+
+  var file = files[0];
+
+  try {
+    reader.readAsText(file);
+  } catch (error) {
+    outputArea.text('ファイルの読み込みに失敗しました');
+  }
+});
+/**
+ * typingTextList の取得が終わってから実行する処理
+ */
+
+function initialize() {
+  // タイピングトレーニングの開始・リセット用
+  jquery__WEBPACK_IMPORTED_MODULE_0___default()(document.body).on('keydown', function (event) {
+    var startKeyList = ['Enter'];
+    var resetKeyList = ['Escape'];
+
+    if (!typingTraining.isInTraining && startKeyList.includes(event.key)) {
+      typingTraining.start();
+    } else if (resetKeyList.includes(event.key)) {
+      // Vimmium を使っていると、typingInputArea にフォーカスがあるときに Esc が検出されない
+      typingTraining.reset();
+    }
+  }); // タイピングトレーニング中、入力した文字列の確定用
+
+  typingInputArea.on('change', function () {
+    if (typingTraining.isInTraining) {
+      var inputText = typingInputArea.val();
+      typingTraining.input(inputText);
+    }
+  }); // 「リトライ」ボタン
+
+  retryButtonArea.on('click', function () {
+    typingTraining.reset();
+  });
+} // コピー禁止
+
+
+jquery__WEBPACK_IMPORTED_MODULE_0___default()(document.body).on('copy', function (e) {
+  e.preventDefault();
+}); // ペースト禁止
+
+typingInputArea.on('paste', function (e) {
+  e.preventDefault();
+});
+
+/***/ }),
+/* 7 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => /* binding */ Timer
 /* harmony export */ });
-/* harmony import */ var _lib_assert__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
+/* harmony import */ var _lib_assert__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -18634,99 +19007,6 @@ var Timer = /*#__PURE__*/function () {
 }();
 
 
-
-/***/ }),
-/* 5 */
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => /* binding */ assert
-/* harmony export */ });
-
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var assert = /*#__PURE__*/function () {
-  function assert() {
-    _classCallCheck(this, assert);
-  }
-
-  _createClass(assert, null, [{
-    key: "eq",
-
-    /**
-     * actual と expected が等しい
-     * @param {*} actual
-     * @param {*} expected
-     * @param {string} message
-     */
-    value: function eq(actual, expected, message) {
-      console.assert(actual === expected, '\nact: ' + actual + '\nexp: ' + expected + (typeof message === 'undefined' ? '' : '\n' + message));
-    }
-    /**
-     * args が全て undefined でない
-     * @param  {...any} args
-     */
-
-  }, {
-    key: "defined",
-    value: function defined() {
-      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
-
-      args.forEach(function (value) {
-        console.assert(typeof value != 'undefined', 'value is undefined');
-      });
-    }
-    /**
-     * 到達するはずがないコードである
-     */
-
-  }, {
-    key: "shouldNotReach",
-    value: function shouldNotReach() {
-      console.assert(false, 'メッセージはでないはずだよ');
-    }
-  }]);
-
-  return assert;
-}();
-
-
-
-/***/ }),
-/* 6 */
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "escapeText": () => /* binding */ escapeText
-/* harmony export */ });
-/* harmony import */ var _assert__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1);
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_1__);
-
-
-
-
-/**
- * エスケープ処理を行う
- * @param {string} value エスケープする文字列
- * @return {string} エスケープされた文字列
- */
-
-function escapeText(value) {
-  _assert__WEBPACK_IMPORTED_MODULE_0__.default.defined(value);
-  return jquery__WEBPACK_IMPORTED_MODULE_1___default()('<div />').text(value).html();
-}
 
 /***/ })
 /******/ 	]);
