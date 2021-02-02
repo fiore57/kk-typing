@@ -45,6 +45,5 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Install dependencies
         run: yarn --frozen-lockfile
-      - run: PORT=8000 yarn start
       - name: Run tests
         run: yarn test
