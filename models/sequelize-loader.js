@@ -19,6 +19,7 @@ else {
   sequelize = new Sequelize('kk_typing', 'postgres', 'postgres', {
     host: process.env.POSTGRES_HOST,
     port: process.env.POSTGRES_PORT,
+    dialect: 'postgres',
     // logging: false, // ログを出力しない
     dialectOptions: {
       ssl: {
