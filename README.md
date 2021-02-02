@@ -1,6 +1,6 @@
 # かな漢字タイピング
 
-![Node.js CI](https://github.com/fiore57/kk-typing/workflows/Node.js%20CI/badge.svg?branch=main)
+[![](https://github.com/fiore57/kk-typing/workflows/Node.js%20CI/badge.svg?branch=main)](https://github.com/fiore57/kk-typing/actions)
 
 [https://kk-typing.herokuapp.com](https://kk-typing.herokuapp.com)
 
