@@ -26,6 +26,8 @@ jobs:
         # postgresのパスワードを提供
         env:
           POSTGRES_PASSWORD: postgres
+        ports:
+          - 3000:5432
         # postgresが起動するまで待つヘルスチェックの設定
         options: >-
           --health-cmd pg_isready
