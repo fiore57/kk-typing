@@ -274,7 +274,7 @@ inputFileArea.on('change', event => {
  * typingTextList の取得が終わってから実行する処理
  */
 function initialize() {
-  // タイピングテストの開始・リセット用
+  // タイピングトレーニングの開始・リセット用
   $(document.body).on('keydown', event => {
     const startKeyList = ['Enter'];
     const resetKeyList = ['Escape'];
@@ -287,7 +287,7 @@ function initialize() {
     }
   });
 
-  // タイピングテスト中、入力した文字列の確定用
+  // タイピングトレーニング中、入力した文字列の確定用
   typingInputArea.on('change', () => {
     if (typingTraining.isInTraining) {
       const inputText = typingInputArea.val();
