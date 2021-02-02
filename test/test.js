@@ -4,11 +4,17 @@ const app = require('../app');
 const passportStub = require('passport-stub');
 
 describe('/ 非ログイン時', () => {
+  test('「トレーニング」ボタンが表示される', () => {
+    return request(app)
+      .get('/')
+      .expect(/<a class="btn btn-primary mx-2 my-1" href="\/typing-training"/)
+      .expect(200);
+  });
   test('ログインボタンが表示される', () => {
     return request(app)
       .get('/')
       .expect('Content-Type', 'text/html; charset=utf-8')
-      .expect(/<a class="btn btn-info" href="\/login"/)
+      .expect(/<a class="btn btn-info mx-2 my-1" href="\/login"/)
       .expect(200);
   });
 });
@@ -22,7 +28,13 @@ describe('/ ログイン時', () => {
     passportStub.logout();
     passportStub.uninstall(app);
   });
-  test('「タイピングテストをプレイ」ボタンが表示される', () => {
+  test('「トレーニング」ボタンが表示される', () => {
+    return request(app)
+      .get('/')
+      .expect(/<a class="btn btn-primary mx-2 my-1" href="\/typing-training"/)
+      .expect(200);
+  });
+  test('「タイピングテスト」ボタンが表示される', () => {
     return request(app)
       .get('/')
       .expect(/<a class="btn btn-primary mx-2 my-1" href="\/typing-test"/)
