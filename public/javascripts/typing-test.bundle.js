@@ -18764,13 +18764,20 @@ inputFileArea.on('change', function (event) {
   reader.onload = function (event) {
     // 読み込んだファイルのテキストを typingTextList に入れる
     var typingText = event.target.result;
-    var typingTextList = typingText.split('\n');
-    var formattedTypingTextList = typingTextList.map(function (text) {
+    var typingTextList = typingText.split('\n').map(function (text) {
       return text.trim();
-    }).filter(function (text) {
+    }) // 行頭・行末のスペースの削除
+    .filter(function (text) {
       return text !== '';
-    });
-    typingTraining = new TypingTraining(formattedTypingTextList);
+    }); // 空行の削除
+
+    if (typingTextList.length === 0) {
+      // typingText が空の場合
+      outputArea.text('文章の取得に失敗しました');
+      return;
+    }
+
+    typingTraining = new TypingTraining(typingTextList);
     initialize();
   };
 

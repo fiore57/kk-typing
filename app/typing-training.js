@@ -285,9 +285,19 @@ inputFileArea.on('change', event => {
   reader.onload = (event) => {
     // 読み込んだファイルのテキストを typingTextList に入れる
     const typingText = event.target.result;
-    const typingTextList = typingText.split('\n');
-    const formattedTypingTextList = typingTextList.map(text => text.trim()).filter(text => text !== '');
-    typingTraining = new TypingTraining(formattedTypingTextList);
+
+    const typingTextList = typingText
+      .split('\n')
+      .map(text => text.trim())     // 行頭・行末のスペースの削除
+      .filter(text => text !== ''); // 空行の削除
+
+    if (typingTextList.length === 0) {
+      // typingText が空の場合
+      outputArea.text('文章の取得に失敗しました');
+      return;
+    }
+
+    typingTraining = new TypingTraining(typingTextList);
     initialize();
   };
 
