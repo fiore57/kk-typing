@@ -21,6 +21,7 @@ else {
     host: process.env.POSTGRES_HOST,
     port: process.env.POSTGRES_PORT,
     dialect: 'postgres',
+    logging: false, // ログを出力しない
   });
 }
 
