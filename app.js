@@ -52,6 +52,7 @@ var indexRouter = require('./routes/index');
 var loginRouter = require('./routes/login');
 var logoutRouter = require('./routes/logout');
 var typingTestRouter = require('./routes/typing-test');
+var typingTrainingRouter = require('./routes/typing-training');
 var recordRouter = require('./routes/record');
 var rankingRouter = require('./routes/ranking');
 
@@ -84,6 +85,7 @@ app.use(passport.session());
 app.use('/', indexRouter);
 app.use('/login', loginRouter);
 app.use('/logout', logoutRouter);
+app.use('/typing-training', typingTrainingRouter);
 app.use('/typing-test', typingTestRouter);
 app.use('/record', recordRouter);
 app.use('/ranking', rankingRouter);

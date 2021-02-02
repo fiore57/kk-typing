@@ -1,9 +1,12 @@
 module.exports = {
   context: __dirname + '/app',
-  entry: './entry',
+  entry: {
+    'typing-test': './typing-test',
+    'typing-training': './typing-training'
+  },
   output: {
     path: __dirname + '/public/javascripts',
-    filename: 'bundle.js'
+    filename: '[name].bundle.js'
   },
   mode: 'none',
   module: {

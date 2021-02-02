@@ -12,8 +12,10 @@ html
     nav.navbar.navbar-expand-lg.navbar-light.bg-light
       div.navbar-header
         a(href="/").navbar-brand.nav-link かな漢字タイピング
-      if user
-        ul.navbar-nav
+      ul.navbar-nav
+        li.nav-item
+          a(href="/typing-training").nav-link Training
+        if user
           li.nav-item
             a(href="/typing-test").nav-link Typing Test
           li.nav-item

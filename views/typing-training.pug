@@ -1,7 +1,7 @@
 extends layout
 
 block scripts
-  script(defer, src="/javascripts/typing-test.bundle.js")
+  script(defer, src="/javascripts/typing-training.bundle.js")
 
 block content
   div
@@ -29,23 +29,12 @@ block content
     //- 終了後に表示するボタン群
     div.btn-toolbar(role="toolbar")
       div(style="display:none")#resultButtons.mx-auto
-        button(type="button" style="display:none")#sendRecordToRanking.btn.btn-primary.mx-2.my-1 ネットランキングに記録を送信
         button(type="button")#retryButton.btn.btn-secondary.mx-2.my-1 リトライ
-        a(href="/record" role="button").btn.btn-info.mx-2.my-1 自分の記録を見る
-        a(href="/ranking" role="button").btn.btn-info.mx-2.my-1 ネットランキングを見る
+    input(type="file" accept="text/plain")#inputFile.my-3
+    p 練習したい文章のテキストファイルを開きます。
+    ul
+      li 空行は無視されます
+      li 行頭・行末のスペースは無視されます
+      li サーバーに内容が送信されることはありません
     p#output
-  //- モーダル
-  div(role="dialog" aria-hidden="true")#modal.modal.fade
-    div(role="document").modal-dialog
-      div.modal-content
-        div.modal-header
-          h5#modalTitle.modal-title
-          button(type="button", data-dismiss="modal", area-label="Close").close
-            span(aria-hidden="true") &times;
-        div.modal-body
-          p#modalBody
-        div.modal-footer
-          button(type="button" data-dismiss="modal").btn.btn-secondary 閉じる
-  //- csrf token
-  input(type="hidden" name="_csrf" value!=csrfToken)#csrfToken
 
