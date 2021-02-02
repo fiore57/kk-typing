@@ -26,8 +26,7 @@ jobs:
         # postgresのパスワードを提供
         env:
           POSTGRES_PASSWORD: postgres
-        ports:
-          - 3000:5432
+          DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/kk_typing
         # postgresが起動するまで待つヘルスチェックの設定
         options: >-
           --health-cmd pg_isready
