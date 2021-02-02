@@ -47,3 +47,6 @@ jobs:
         run: yarn --frozen-lockfile
       - name: Run tests
         run: yarn test
+        env:
+          POSTGRES_HOST: postgres
+          POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
