@@ -25,7 +25,9 @@ jobs:
         image: postgres
         # postgresのパスワードを提供
         env:
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: kk_typing
         # postgresが起動するまで待つヘルスチェックの設定
         options: >-
           --health-cmd pg_isready
@@ -43,5 +45,3 @@ jobs:
         run: yarn --frozen-lockfile
       - name: Run tests
         run: yarn test
-        env:
-          DATABASE_URL: postgres
